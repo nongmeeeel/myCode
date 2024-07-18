@@ -8,6 +8,9 @@ class CodeController extends GetxController {
   final CodeRepository _codeRepository = CodeRepository();
 
   RxList<CodeType> allCodeList = <CodeType>[].obs;
+  RxList<CodeItem> itemsInHobby = <CodeItem>[].obs;
+  RxList<CodeItem> itemsInHobbyFilter = <CodeItem>[].obs;
+  RxBool filterViewToggle = true.obs;
 
   @override
   void onInit() {
@@ -18,5 +21,18 @@ class CodeController extends GetxController {
   Future<void> getAllCodeList() async {
     List<CodeType> _allCodeList = await _codeRepository.getAllCodeListAPI();
     allCodeList.assignAll(_allCodeList);
+  }
+
+  void setItemsInCategory(CodeCategory codeCategory) {
+    List<CodeItem> _codeItemList = [];
+    for(var item in codeCategory.codeItems){
+      _codeItemList.add(item);
+    }
+    itemsInHobby.assignAll(_codeItemList);
+    filterViewToggle.value = false;
+  }
+
+  void toggleFilterView() {
+    filterViewToggle.value = !filterViewToggle.value;
   }
 }
