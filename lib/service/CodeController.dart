@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:mycode/model/local/Code.dart';
@@ -10,7 +11,7 @@ class CodeController extends GetxController {
   RxList<CodeType> allCodeList = <CodeType>[].obs;
   RxList<CodeItem> itemsInHobby = <CodeItem>[].obs;
   RxList<CodeItem> itemsInHobbyFilter = <CodeItem>[].obs;
-  RxBool filterViewToggle = true.obs;
+  RxBool isItemsView = false.obs;
 
   @override
   void onInit() {
@@ -29,10 +30,23 @@ class CodeController extends GetxController {
       _codeItemList.add(item);
     }
     itemsInHobby.assignAll(_codeItemList);
-    filterViewToggle.value = false;
+    isItemsView.value = true;
   }
 
-  void toggleFilterView() {
-    filterViewToggle.value = !filterViewToggle.value;
+  void addItemsInHobbyFilter(CodeItem item) {
+    itemsInHobbyFilter.add(item);
+  }
+
+  void removeItemsInHobbyFilter(CodeItem item) {
+    itemsInHobbyFilter.remove(item);
+  }
+
+  void searchUserListWithFilter() async {
+    List<int> itemIdList = [];
+    for(var item in itemsInHobbyFilter) {
+      itemIdList.add(item.id);
+    }
+    await _codeRepository.insertUserCodeFilterMapAPI(itemIdList);
+    isItemsView.value = false;
   }
 }

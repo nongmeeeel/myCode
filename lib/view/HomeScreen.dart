@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:mycode/view/screen/HomeProfileScreen.dart';
+import 'package:mycode/view/screen/KakaoLoginScreen.dart';
 import 'screen/HomeInfoScreen.dart';
 import 'screen/HomeMapScreen.dart';
-import 'screen/HomeSettingsScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -67,16 +68,20 @@ class _HomeScreenState extends State<HomeScreen> {
         unselectedItemColor: Colors.black,
         items: [
           BottomNavigationBarItem(
-              label: "내 주변",
-              icon: Icon(Icons.map_outlined)
-          ),
-          BottomNavigationBarItem(
               label: "내 정보",
               icon: Icon(Icons.person)
           ),
           BottomNavigationBarItem(
-              label: "설정",
-              icon: Icon(Icons.settings)
+              label: "내 주변",
+              icon: Icon(Icons.map_outlined)
+          ),
+          BottomNavigationBarItem(
+              label: "프로필",
+              icon: Icon(Icons.person_2_outlined)
+          ),
+          BottomNavigationBarItem(
+              label: "로그인",
+              icon: Icon(Icons.person_2_outlined)
           )
         ],
         onTap: (int index) {
@@ -91,7 +96,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 _currentPage = HomeMapScreen();
                 break;
               case 2:
-                _currentPage = HomeSettingsScreen();
+                _currentPage = HomeProfileScreen();
+                break;
+              case 3:
+                _currentPage = KakaoLoginScreen();
                 break;
               default:
                 _currentPage = Container(); // 예외 처리: 기본적으로 빈 컨테이너를 표시

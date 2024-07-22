@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:get/get.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:mycode/service/CodeController.dart';
 import 'package:mycode/service/UserController.dart';
 import 'package:mycode/service/TownController.dart';
@@ -12,8 +13,9 @@ import 'package:mycode/view/screen/MyMapScreen.dart';
 import 'package:mycode/view/screen/TownSearchScreen.dart';
 
 void main() async {
-    await _initialize();
-    runApp(MyCode());
+  KakaoSdk.init(nativeAppKey: '2ab3cf1d10a4a98cdf9d505671df64f1');
+  await _initialize();
+  runApp(MyCode());
 }
 
 //지도 초기화하기

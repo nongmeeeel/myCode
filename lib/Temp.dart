@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:mycode/service/UserController.dart';
-import 'package:provider/provider.dart';
 
-import '../../model/local/User.dart';
-
-class HomeSettingsScreen extends StatelessWidget {
+class Temp extends StatelessWidget {
   final UserController _userController = Get.find<UserController>();
 
   @override

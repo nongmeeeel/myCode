@@ -19,4 +19,25 @@ class CodeRepository {
       throw Exception(e);
     }
   }
+
+  Future<void> insertUserCodeFilterMapAPI(List<int> itemIdList) async {
+    try {
+      Response response = await _dio.post(
+        'http://10.0.2.2:8080/api/v1/user/filter'
+        ,data: itemIdList
+        ,options: Options(
+          headers: {
+            'Content-Type': 'application/json', // JSON 형식으로 전송
+          },
+        ),
+      );
+      if (response.statusCode == 201) {
+        print('Filters finserted successfully');
+      } else {
+        throw Exception(ResponseFailMessage(response));
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
 }
