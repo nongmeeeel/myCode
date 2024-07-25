@@ -82,5 +82,30 @@ class UserRepository {
     }
   }
 
+  // Future<void> sendTokenToServer(int authId) async {
+  //   try{
+  //     Response response = await _dio.post(
+  //       'https://kauth.kakao.com/oauth/token',
+  //       data: {
+  //         'grant_type' : 'authorization_code',
+  //         'client_id' : '38d56bcf00c8417e2f08d3843c3bc49e',
+  //         'redirect_uri' : 'http://10.0.2.2:8080/api/v1/user/login',
+  //         'code': '${authId}'
+  //       },
+  //       options: Options(
+  //         headers: {
+  //           'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+  //         },
+  //       ),
+  //     );
+  //     if (response.statusCode == 200) {
+  //       print("완료");
+  //     } else {
+  //       throw Exception(ResponseFailMessage(response));
+  //     }
+  //   } catch(e) {
+  //     throw Exception(e);
+  //   }
+  // }
 
 }

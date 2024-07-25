@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:mycode/view/screen/HomeProfileScreen.dart';
-import 'package:mycode/view/screen/KakaoLoginScreen.dart';
+import 'package:mycode/view/screen/LoginScreen.dart';
 import 'screen/HomeInfoScreen.dart';
 import 'screen/HomeMapScreen.dart';
 
@@ -99,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 _currentPage = HomeProfileScreen();
                 break;
               case 3:
-                _currentPage = KakaoLoginScreen();
+                _currentPage = LoginScreen();
                 break;
               default:
                 _currentPage = Container(); // 예외 처리: 기본적으로 빈 컨테이너를 표시
