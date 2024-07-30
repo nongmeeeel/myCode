@@ -5,39 +5,43 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:mycode/common/auth/KakaoLoginUtil.dart';
 import 'package:mycode/common/auth/KakaoTokenUtil.dart';
 
+import 'CodeController.dart';
+import 'TownController.dart';
+import 'UserController.dart';
+
 class AuthController extends GetxController {
   KakaoTokenUtil kakaoTokenUtil = KakaoTokenUtil();
   KakaoLoginUtil kakaoLoginUtil = KakaoLoginUtil();
 
-  RxBool isAuthenticated = false.obs;
+  RxBool isLogin = false.obs;
   Rx<User?> kakaoUser = Rx<User?>(null);
 
-  @override
-  void onInit() {
-    super.onInit();
-    validateKakaoToken();
-  }
 
-  Future<void> validateKakaoToken () async {
-    bool _isAuthenticated = await kakaoTokenUtil.validateKakaoToken();
-    isAuthenticated.value = _isAuthenticated;
-    if (_isAuthenticated) {
+  Future<bool> loginCheck () async {
+    bool _isLogin = await kakaoTokenUtil.loginCheck();
+    isLogin.value = _isLogin;
+    if (_isLogin) {
       kakaoUser.value = await UserApi.instance.me();
+      return true;
     } else {
       kakaoUser.value = null;
+      return false;
     }
   }
 
-  Future<bool> kakaoLogin() async {
+  Future<void> kakaoLogin() async {
     await kakaoLoginUtil.login();
-    await validateKakaoToken();
-    bool loginFlag = kakaoUser.value != null ? true : false;
-    return loginFlag;
+    loginCheck();
+    Get.toNamed("/loading");
   }
 
-  Future kakaoLogout() async {
+  Future<void> kakaoLogout() async {
     await kakaoLoginUtil.logout();
-    validateKakaoToken();
+    Get.delete<UserController>();
+    Get.delete<TownController>();
+    Get.delete<CodeController>();
+    loginCheck();
+    Get.toNamed("/loading");
   }
 
 }

@@ -38,7 +38,6 @@ class KakaoLoginUtil {
     }
   }
 
-  @override
   Future<bool> logout() async {
     try {
       await UserApi.instance.unlink();

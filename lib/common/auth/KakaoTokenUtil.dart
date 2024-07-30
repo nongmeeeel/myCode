@@ -1,7 +1,7 @@
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
 class KakaoTokenUtil {
-  Future<bool> validateKakaoToken() async {
+  Future<bool> loginCheck() async {
     try{
       if (await AuthApi.instance.hasToken()) {
         try {

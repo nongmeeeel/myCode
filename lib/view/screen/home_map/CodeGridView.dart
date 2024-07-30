@@ -13,11 +13,12 @@ class CodeGridView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       var allCodeList = codeController.allCodeList;
-      var codeCategories = allCodeList[1].codeCategories;
 
       if (allCodeList.isEmpty) {
         // 로딩 중이거나 데이터가 없을 때 표시할 UI
         return Center(child: CircularProgressIndicator());
+      } else {
+
       }
 
       // GridView.builder로 변경
@@ -33,11 +34,11 @@ class CodeGridView extends StatelessWidget {
             crossAxisSpacing: 0 , // 수평 간격
             childAspectRatio: 1.0, // 각 아이템의 가로 세로 비율
           ),
-          itemCount: codeCategories.length,
+          itemCount: allCodeList[1].codeCategories.length,
           itemBuilder: (context, index) {
             return GestureDetector(
               onTap: () {
-                codeController.setItemsInCategory(codeCategories[index]);
+                codeController.setItemsInCategory(allCodeList[1].codeCategories[index]);
               },
               child: Container(
                 padding: EdgeInsets.all(5),
@@ -50,7 +51,7 @@ class CodeGridView extends StatelessWidget {
                 child: Center(
                   child: Text(
                     textAlign: TextAlign.center,
-                    codeCategories[index].title,
+                    allCodeList[1].codeCategories[index].title,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 10,

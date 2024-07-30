@@ -1,15 +1,17 @@
 import 'package:dio/dio.dart';
+import '../../common/Interceptor.dart';
 import '../../common/FunctionUtil.dart';
 import '../../model/local/User.dart';
 import '../../model/local/UserTown.dart';
 import '../../model/third_party/Town.dart';
 
 class UserRepository {
-  final Dio _dio = Dio();
+  final Dio dio = Dio();
+  final Dio authDio = getAuthDio();
 
-  Future<List<User>> getUserListAPI() async {
+  Future<List<User>> fetchUserListAPI() async {
     try{
-      Response response = await _dio.get('http://10.0.2.2:8080/api/v1/user/list');
+      Response response = await authDio.get('http://10.0.2.2:8080/api/v1/user/list');
       if(response.statusCode == 200){
         List<dynamic> responseData = response.data;
         return responseData.map((json) => User.fromJson(json)).toList();
@@ -21,9 +23,9 @@ class UserRepository {
     }
   }
 
-  Future<User> getUser() async {
+  Future<User?> fetchUser() async {
     try{
-      Response response = await _dio.get('http://10.0.2.2:8080/api/v1/user/user');
+      Response response = await authDio.get('http://10.0.2.2:8080/api/v1/user/user');
       if(response.statusCode == 200){
         dynamic responseData = response.data;
         return User.fromJson(responseData);
@@ -31,13 +33,13 @@ class UserRepository {
         throw Exception(ResponseFailMessage(response));
       }
     } catch(e) {
-      throw Exception(e);
+      return null;
     }
   }
 
   Future<void> updateUserTown(Town town, double lat, double lng, double zoom) async {
     try{
-      Response response = await _dio.put(
+      Response response = await authDio.put(
           'http://10.0.2.2:8080/api/v1/user/town',
           data: {
             'townCode': town.emdCd,
@@ -60,7 +62,7 @@ class UserRepository {
 
   Future<void> insertTownTemp(UserTown userTown) async {
     try{
-      Response response = await _dio.post(
+      Response response = await authDio.post(
           'http://10.0.2.2:8080/api/v1/user/town',
           data: {
             'townCode': userTown.townCode,

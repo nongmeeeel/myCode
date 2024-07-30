@@ -22,18 +22,9 @@ class LoginScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.headline4,
               ),
               ElevatedButton(
-                onPressed: () async {
-                  bool isLogin = await authController.kakaoLogin();
-                  if (isLogin) {
-                    Get.offNamed('/');
-                  }
-                },
+                onPressed: () => authController.kakaoLogin(),
                 child: Text('Login'),
               ),
-              ElevatedButton(
-                onPressed: () => authController.kakaoLogout(),
-                child: Text('Logout'),
-              )
             ],
           ),
         ),

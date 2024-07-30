@@ -2,18 +2,20 @@ import 'dart:ffi';
 
 import 'package:dio/dio.dart';
 
+import '../../common/Interceptor.dart';
 import '../../common/FunctionUtil.dart';
 import '../../model/third_party/Town.dart';
 import '../../model/third_party/TownOne.dart';
 
 class TownRepository {
-  final Dio _dio = Dio();
+  final Dio dio = Dio();
+  final Dio authDio = getAuthDio();
   final String vworldKey = '381D36EB-9CC0-3C62-9B77-13A5D78C2EAD';
 
 
   Future<List<Town>> selectTownListByTownNmAPI(String townNm) async {
     try{
-      Response response = await _dio.get(
+      Response response = await authDio.get(
         'https://api.vworld.kr/req/data',
         queryParameters: {
           'service' : 'data',
@@ -50,7 +52,7 @@ class TownRepository {
 
   Future<TownOne> getTownByTownCodeAPI(String townCode) async {
     try{
-      Response response = await _dio.get(
+      Response response = await authDio.get(
           'https://api.vworld.kr/req/data',
           queryParameters: {
             'service' : 'data',

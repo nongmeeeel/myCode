@@ -22,27 +22,26 @@ class UserController extends GetxController {
   Rx<double> centerX = Rx<double>(127.1107); // 직접 초기화
   Rx<double> zoomLevel = Rx<double>(14.4); // 직접 초기화
 
-  @override
-  void onInit() {
-    super.onInit();
-    getUserList();
-    getUser();
-  }
-
   // 멤버 목록 조회
-  Future<void> getUserList() async {
-    List<User> _userList = await _userRepository.getUserListAPI();
+  Future<void> fetchUserList() async {
+    List<User> _userList = await _userRepository.fetchUserListAPI();
     userList.assignAll(_userList);
   }
 
-  Future<void> getUser() async {
-    User _user = await _userRepository.getUser();
-    TownOne _userTown = await _townRepository.getTownByTownCodeAPI(_user.userTown.townCode);
-    centerY.value = _user.userTown.lat;
-    centerX.value = _user.userTown.lng;
-    zoomLevel.value = _user.userTown.zoomLevel;
-    user.value = _user;
-    userTown.value = _userTown;
+  Future<bool> fetchUser() async {
+    User? _user = await _userRepository.fetchUser();
+    if(_user == null){
+      user.value = null;
+      return false;
+    } else {
+      TownOne _userTown = await _townRepository.getTownByTownCodeAPI(_user.userTown.townCode);
+      centerY.value = _user.userTown.lat;
+      centerX.value = _user.userTown.lng;
+      zoomLevel.value = _user.userTown.zoomLevel;
+      user.value = _user;
+      userTown.value = _userTown;
+      return true;
+    }
   }
 
   Future<void> updateUserTown(Town town) async {

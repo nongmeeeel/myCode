@@ -16,11 +16,10 @@ class CodeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getAllCodeList();
   }
 
-  Future<void> getAllCodeList() async {
-    List<CodeType> _allCodeList = await _codeRepository.getAllCodeListAPI();
+  Future<void> fetchAllCodeList() async {
+    List<CodeType> _allCodeList = await _codeRepository.fetchAllCodeListAPI();
     allCodeList.assignAll(_allCodeList);
   }
 
