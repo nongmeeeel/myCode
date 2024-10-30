@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:mycode/repository/third_party/TownRepository.dart';
 
-import '../../repository/local/UserRepository.dart';
+import '../../repository/local/MemberRepository.dart';
 import '../../service/TownController.dart';
 
 class HomeInfoScreen extends StatelessWidget {

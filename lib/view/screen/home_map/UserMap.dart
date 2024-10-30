@@ -3,21 +3,73 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
-import '../../../model/local/User.dart';
+import '../../../model/local/Member.dart';
 import '../../../model/third_party/TownOne.dart';
-import '../../../service/UserController.dart';
+import '../../../service/MemberController.dart';
 import 'CodeFilterList.dart';
 
 class UserMap extends StatelessWidget {
-  UserController userController = Get.find<UserController>();
+  @override
+  Widget build(BuildContext context) {
+    MemberController memberController = Get.find<MemberController>();
+
+    return Obx((){
+      TownOne? userTown = memberController.memberTown.value;
+      List<Member> memberList = memberController.memberList.value;
+
+      return userTown != null && memberList.isNotEmpty ? ActiveMap() : DefaultMap();
+    });
+  }
+}
+
+class DefaultMap extends StatelessWidget {
+  MemberController memberController = Get.find<MemberController>();
 
   @override
   Widget build(BuildContext context) {
-    final TownOne userTown = userController.userTown.value!;
-    double centerY = userController.centerY.value;
-    double centerX = userController.centerX.value;
-    double zoomLevel = userController.zoomLevel.value;
-    List<User> userList = userController.userList.value;
+    List<Member> userList = memberController.memberList.value;
+
+    return Stack(
+      children: [
+        NaverMap(
+          options: NaverMapViewOptions(
+            initialCameraPosition: NCameraPosition(
+                target: NLatLng(37.3946,127.1107),
+                zoom: 14.4,
+                bearing: 0,
+                tilt: 0
+            ),
+          ),
+          forceGesture: false,
+          onMapReady: (controller) {
+            _addOverlayAll(controller, userList);
+            _addCircleOverlays(controller, userList, context);
+            _addCircleOverlays2(controller, userList, context);
+          },
+          onMapTapped: (point, latLng) {},
+          onSymbolTapped: (symbol) {},
+          onCameraChange: (position, reason) {},
+          onCameraIdle: () {},
+          onSelectedIndoorChanged: (indoor) {},
+        ),
+      ],
+    );
+  }
+}
+
+
+class ActiveMap extends StatelessWidget {
+  MemberController memberController = Get.find<MemberController>();
+
+  @override
+  Widget build(BuildContext context) {
+    List<Member> userList = memberController.memberList.value ;
+    TownOne userTown = memberController.memberTown.value!;
+    double centerY = memberController.centerY.value;
+    double centerX = memberController.centerX.value;
+    double zoomLevel = memberController.zoomLevel.value;
+
+    NaverMapController? nController;
 
     return Stack(
       children: [
@@ -32,19 +84,24 @@ class UserMap extends StatelessWidget {
           ),
           forceGesture: false,
           onMapReady: (controller) {
+            nController = controller;
             _addPolygonOverlay(controller, userTown);
-            // controller.addOverlayAll(NPolygonOverlaySet);
-            _addOverlayAll(controller, userList);
+            // _addOverlayAll(controller, userList);
             _addCircleOverlays(controller, userList, context);
             _addCircleOverlays2(controller, userList, context);
           },
           onMapTapped: (point, latLng) {},
           onSymbolTapped: (symbol) {},
           onCameraChange: (position, reason) {},
-          onCameraIdle: () {},
+          onCameraIdle: () async {
+              // 화면 전환 시 화면에 포함된 user 검색 (현재 사용 불필요)
+              if (nController != null) { // nController가 null이 아닐 때만 호출
+                NLatLngBounds nContentBounds = await nController!.getContentBounds();
+                memberController.setBounds(nContentBounds);
+              }
+            },
           onSelectedIndoorChanged: (indoor) {},
         ),
-        // 지도 위에 리스트를 겹쳐 출력
         CodeFilterList()
       ],
     );
@@ -66,14 +123,14 @@ NPolygonOverlay createNPolygonOverlay({
   );
 }
 
-void _addOverlayAll(NaverMapController controller, List<User> userList) {
-  Map<String, List<User>> userGroupMap = {};
-  for (User user in userList) {
-    String townCode = user.userTown.townCode;
+void _addOverlayAll(NaverMapController controller, List<Member> memberList) {
+  Map<String, List<Member>> userGroupMap = {};
+  for (Member member in memberList) {
+    String townCode = member.memberTown.townCode;
     if (!userGroupMap.containsKey(townCode)) {
       userGroupMap[townCode] = [];
     }
-    userGroupMap[townCode]!.add(user);
+    userGroupMap[townCode]!.add(member);
   }
 
   Map<String, Set<NAddableOverlay>> overlaysMap = {};
@@ -85,7 +142,7 @@ void _addOverlayAll(NaverMapController controller, List<User> userList) {
       index++;
       markers.add(NMarker(
         id: "$index",
-        position: NLatLng(user.userTown.lat, user.userTown.lng),
+        position: NLatLng(user.memberTown.lat, user.memberTown.lng),
         icon: NOverlayImage.fromAssetImage('assets/images/marker.png'),
         size: Size(40.0, 40.0),
       ));
@@ -94,8 +151,6 @@ void _addOverlayAll(NaverMapController controller, List<User> userList) {
   });
 
   controller.addOverlayAll(overlaysMap['41135106']!);
-  var a = 1;
-
 }
 
 
@@ -103,41 +158,41 @@ void _addOverlayAll(NaverMapController controller, List<User> userList) {
 // 내 위치 영역 Polygon 출력
 void _addPolygonOverlay(NaverMapController controller, TownOne userTown) {
   Set<NPolygonOverlay> NPolygonOverlaySet = {};
-  if ( userTown != null) {
-    final List<List<List<List<double>>>> coordinates = userTown
-        .features[0].geometry.coordinates;
-    for (int i = 0; i < coordinates.length; i++) {
-      List<NLatLng> coords = (coordinates[i][0].map((e) =>
-          NLatLng(e[1], e[0])).toList());
-      NPolygonOverlaySet.add(
-          createNPolygonOverlay(coords: coords, id: "coords${i}"));
-    }
+
+  final List<List<List<List<double>>>> coordinates = userTown
+      .features[0].geometry.coordinates;
+  for (int i = 0; i < coordinates.length; i++) {
+    List<NLatLng> coords = (coordinates[i][0].map((e) =>
+        NLatLng(e[1], e[0])).toList());
+    NPolygonOverlaySet.add(
+        createNPolygonOverlay(coords: coords, id: "coords${i}"));
   }
+
   controller.addOverlayAll(NPolygonOverlaySet);
 }
 
 
 
 // userList 동네 위치 Circle 출력
-void _addCircleOverlays(NaverMapController controller, List<User> userList, BuildContext context) {
-  Map<String, List<User>> userGroupMap = {};
+void _addCircleOverlays(NaverMapController controller, List<Member> memberList, BuildContext context) {
+  Map<String, List<Member>> userGroupMap = {};
 
-  for (User user in userList) {
-    String townCode = user.userTown.townCode;
+  for (Member member in memberList) {
+    String townCode = member.memberTown.townCode;
     if (!userGroupMap.containsKey(townCode)) {
       userGroupMap[townCode] = [];
     }
-    userGroupMap[townCode]!.add(user);
+    userGroupMap[townCode]!.add(member);
   }
 
   int index = 0;
 
   userGroupMap.forEach((townCode, users) {
     if (users.isNotEmpty) {
-      User firstUser = users.first;
+      Member firstUser = users.first;
       NCircleOverlay circle = NCircleOverlay(
         id: 'circle_$index', // 고유 ID 설정
-        center: NLatLng(firstUser.userTown.lat, firstUser.userTown.lng),
+        center: NLatLng(firstUser.memberTown.lat, firstUser.memberTown.lng),
         radius: 500, // 반지름을 원하는 값으로 설정 (미터 단위)
         color: Colors.red.withOpacity(0.5), // 원의 색상과 투명도 설정
         outlineColor: Colors.red,
@@ -154,12 +209,12 @@ void _addCircleOverlays(NaverMapController controller, List<User> userList, Buil
   });
 }
 
-// 동네 위치 이름 및 custom이미지 출력
-void _addCircleOverlays2(NaverMapController controller, List<User> userList, BuildContext context) {
-  Map<String, List<User>> userGroupMap = {};
+// userList 동네이름, 유저수, custom이미지 출력
+void _addCircleOverlays2(NaverMapController controller, List<Member> userList, BuildContext context) {
+  Map<String, List<Member>> userGroupMap = {};
 
-  for (User user in userList) {
-    String townCode = user.userTown.townCode;
+  for (Member user in userList) {
+    String townCode = user.memberTown.townCode;
     if (!userGroupMap.containsKey(townCode)) {
       userGroupMap[townCode] = [];
     }
@@ -170,15 +225,15 @@ void _addCircleOverlays2(NaverMapController controller, List<User> userList, Bui
 
   userGroupMap.forEach((townCode, users) {
     if (users.isNotEmpty) {
-      User firstUser = users.first;
+      Member firstUser = users.first;
 
       // 투명 아이콘으로 마커 오버레이 생성 (글자 가독성 확보)
       NMarker marker = NMarker(
         id: 'marker_$index',
-        position: NLatLng(firstUser.userTown.lat, firstUser.userTown.lng),
+        position: NLatLng(firstUser.memberTown.lat, firstUser.memberTown.lng),
         icon: NOverlayImage.fromAssetImage('assets/images/girl1.png'),
         size: Size(40.0,40.0),
-        caption: NOverlayCaption(text: "${firstUser.userTown.nm}"),
+        caption: NOverlayCaption(text: "${firstUser.memberTown.nm}"),
         subCaption: NOverlayCaption(text: "${users.length}"),
         // label: NLabel(
         //   text: '${firstUser.userTown.townName}',
@@ -198,7 +253,7 @@ void _addCircleOverlays2(NaverMapController controller, List<User> userList, Bui
   });
 }
 
-void _showUserListBottomSheet(BuildContext context, List<User> users) {
+void _showUserListBottomSheet(BuildContext context, List<Member> users) {
   showModalBottomSheet(
     context: context,
     builder: (BuildContext context) {

@@ -6,22 +6,19 @@ import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import '../../../service/CodeController.dart';
 
 class CodeGridView extends StatelessWidget {
-  final CodeController codeController = Get.find<CodeController>();
-
-
   @override
   Widget build(BuildContext context) {
+    final CodeController codeController = Get.find<CodeController>();
+
     return Obx(() {
       var allCodeList = codeController.allCodeList;
 
       if (allCodeList.isEmpty) {
-        // 로딩 중이거나 데이터가 없을 때 표시할 UI
-        return Center(child: CircularProgressIndicator());
-      } else {
-
+        return Center(
+          child: CircularProgressIndicator(),
+        );
       }
 
-      // GridView.builder로 변경
       return Container(
         height: 137,
         width:  445,
@@ -36,31 +33,36 @@ class CodeGridView extends StatelessWidget {
           ),
           itemCount: allCodeList[1].codeCategories.length,
           itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                codeController.setItemsInCategory(allCodeList[1].codeCategories[index]);
-              },
-              child: Container(
-                padding: EdgeInsets.all(5),
-                margin: EdgeInsets.symmetric(horizontal: 1.0, vertical: 1.0),
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(8.0),
-                  border: Border.all(color: Colors.white, width: 1.0),
-                ),
-                child: Center(
-                  child: Text(
-                    textAlign: TextAlign.center,
-                    allCodeList[1].codeCategories[index].title,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
+            return Obx(() {
+              var clickedCategoryIndex = codeController.clickedCategoryIndex.value;
+              return GestureDetector(
+                onTap: () {
+                  codeController.setClickedCategory(index);
+                },
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                  margin: EdgeInsets.symmetric(horizontal: 1.0, vertical: 1.0),
+                  decoration: BoxDecoration(
+                    color: codeController.clickedCategoryIndex.value == index
+                        ? Colors.orange // 선택된 카테고리라면 빨간색 배경
+                        : Colors.black, // 선택되지 않은 카테고리는 투명 배경
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(color: Colors.white, width: 1.0),
+                  ),
+                  child: Center(
+                    child: Text(
+                      textAlign: TextAlign.center,
+                      allCodeList[1].codeCategories[index].title,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            );
+              );
+            });
           },
         ),
       );

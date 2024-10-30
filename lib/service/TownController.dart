@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
-import 'package:mycode/repository/local/UserRepository.dart';
+import 'package:mycode/repository/local/MemberRepository.dart';
 import 'package:mycode/repository/third_party/TownRepository.dart';
 
 import '../model/third_party/Town.dart';

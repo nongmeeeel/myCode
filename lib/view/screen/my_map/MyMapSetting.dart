@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
-import 'package:mycode/service/UserController.dart';
+import 'package:mycode/service/MemberController.dart';
 
 import '../../../model/third_party/Town.dart';
 import '../../../model/third_party/TownOne.dart';
@@ -65,7 +65,7 @@ class TownSettingButton extends StatelessWidget {
 
 class defaultButton extends StatelessWidget {
   defaultButton(this.emdKorNm);
-  final UserController _userController = Get.find<UserController>();
+  final MemberController _memberController = Get.find<MemberController>();
   final String emdKorNm;
 
   @override
@@ -95,7 +95,7 @@ class defaultButton extends StatelessWidget {
             color: Colors.black87,
             child: IconButton(
                 color: Colors.white,
-                onPressed: () => _userController.resetTownOne(),
+                onPressed: () => _memberController.resetTownOne(),
                 icon: Icon(Icons.close)
             ),
           )

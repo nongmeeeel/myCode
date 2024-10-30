@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
-import 'package:mycode/service/UserController.dart';
+import 'package:mycode/service/MemberController.dart';
 import 'package:provider/provider.dart';
 
-import '../../model/local/User.dart';
+import '../../model/local/Member.dart';
 
 class HomeProfileScreen extends StatelessWidget {
 

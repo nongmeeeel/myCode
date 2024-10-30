@@ -6,7 +6,7 @@ import 'package:mycode/common/FunctionUtil.dart';
 import '../../../model/third_party/Town.dart';
 import '../../../model/third_party/TownOne.dart';
 import '../../../service/TownController.dart';
-import '../../../service/UserController.dart';
+import '../../../service/MemberController.dart';
 
 class MyMap extends StatelessWidget {
   MyMap ({this.userTown});
@@ -25,10 +25,10 @@ class UserTown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserController userController = Get.find<UserController>();
-    double centerY = userController.centerY.value;
-    double centerX = userController.centerX.value;
-    double zoomLevel = userController.zoomLevel.value;
+    MemberController memberController = Get.find<MemberController>();
+    double centerY = memberController.centerY.value;
+    double centerX = memberController.centerX.value;
+    double zoomLevel = memberController.zoomLevel.value;
 
     Set<NPolygonOverlay> NPolygonOverlaySet = {};
     if ( userTown != null) {
@@ -69,13 +69,13 @@ class UserTown extends StatelessWidget {
 
 
 class DefaultTown extends StatelessWidget {
-  UserController userController = Get.find<UserController>();
+  MemberController memberController = Get.find<MemberController>();
 
   @override
   Widget build(BuildContext context) {
-    double centerY = userController.centerY.value;
-    double centerX = userController.centerX.value;
-    double zoomLevel = userController.zoomLevel.value;
+    double centerY = memberController.centerY.value;
+    double centerX = memberController.centerX.value;
+    double zoomLevel = memberController.zoomLevel.value;
 
     return Container(
         child: NaverMap(

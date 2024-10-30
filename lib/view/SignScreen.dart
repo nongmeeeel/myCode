@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+
+import '../service/MemberController.dart';
 
 class SignScreen extends StatelessWidget {
   const SignScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final MemberController memberController = Get.find<MemberController>();
+
+
     return Scaffold(
       body: Stack(
         children: [
@@ -104,6 +111,14 @@ class SignScreen extends StatelessWidget {
                           ),
                         ),
                         SizedBox(height: 16),
+                        Container(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              memberController.logout();
+                            } ,
+                            child: Text('Logout'),
+                          ),
+                        ),
                         TextButton(
                           onPressed: () {
                             // 로그인 페이지로 이동

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:mycode/service/AuthController.dart';
-import 'package:mycode/service/UserController.dart';
+import 'package:mycode/service/MemberController.dart';
 
 class Temp extends StatelessWidget {
-  final UserController _userController = Get.find<UserController>();
-  final AuthController authController = Get.find<AuthController>();
+  final MemberController _memberController = Get.find<MemberController>();
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +13,7 @@ class Temp extends StatelessWidget {
         Container(
           child: TextButton(
             child: Text('도시 추가', style: TextStyle(color: Colors.white)),
-            onPressed: _userController.insertTownTemp,
+            onPressed: _memberController.insertTownTemp,
             style: TextButton.styleFrom(
               backgroundColor: Colors.black87,
             ),
@@ -23,7 +21,9 @@ class Temp extends StatelessWidget {
         ),
         Container(
           child: ElevatedButton(
-            onPressed: () => authController.kakaoLogout(),
+            onPressed: () async {
+              _memberController.logout();
+            } ,
             child: Text('Logout'),
           ),
         )

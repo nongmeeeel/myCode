@@ -6,6 +6,38 @@ import 'package:get/get_core/src/get_main.dart';
 
 import '../model/third_party/TownOne.dart';
 
+void handleDioException(DioException e) {
+  final response = e.response;
+  final requestOptions = e.requestOptions;
+
+  if (response != null) {
+    final errorMessage = response.data['message'] ?? '에러메시지없음';
+    print('@@@@@@ DIO에러(응답실패) @@@@@@');
+    print('요청URL: ${requestOptions.uri}');
+    print('$errorMessage');
+    print('@@@@@@ 끝 @@@@@@@');
+  } else {
+    print('@@@@@@ DIO에러(요청실패) @@@@@@');
+    print('요청URL: ${requestOptions.uri}');
+    print('$e');
+    print('@@@@@@ 끝 @@@@@@');
+  }
+
+  // 요청 URL 출력
+
+}
+
+void handleException(dynamic e) {
+  if (e is DioException) {
+    handleDioException(e);
+  } else {
+    print('@@@@@@@@@@@@ 일반 에러 @@@@@@@@@@@@');
+    print('$e');
+    print('@@@@@@@@@@@@@@@@@@@ 끝 @@@@@@@@@@@');
+  }
+}
+
+
 double townOneToZoomLevel(TownOne townOne) {
 
   double lengthX = townOne.bbox[2] - townOne.bbox[0];
@@ -54,7 +86,7 @@ List<double> townOneToCenterYX(TownOne townOne) {
 }
 
 String ResponseFailMessage (Response response) {
-  return "------------ResponseError 코드: ${response.statusCode} 메시지: ${response.statusMessage}";
+  return "********** 에러 (API실패) 코드: ${response.statusCode} 메시지: ${response.statusMessage}";
 }
 
 

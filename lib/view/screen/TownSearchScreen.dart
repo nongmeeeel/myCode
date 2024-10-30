@@ -2,14 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mycode/model/third_party/Town.dart';
-import 'package:mycode/service/UserController.dart';
+import 'package:mycode/service/MemberController.dart';
 import 'package:mycode/service/TownController.dart';
 import 'package:get/get.dart';
 
 
 class TownSearchScreen extends StatelessWidget {
   final TownController _townController = Get.find<TownController>();
-  final UserController _userController = Get.find<UserController>();
+  final MemberController _memberController = Get.find<MemberController>();
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +69,7 @@ class TownSearchScreen extends StatelessWidget {
                       return ListTile(
                         title: Text(townList[index].fullNm),
                         onTap: () {
-                          _userController.updateUserTown(townList[index]);
+                          _memberController.updateMemberTown(townList[index]);
                           Get.back();
                           Get.snackbar(
                             "동네가 변경되었습니다.",

@@ -1,27 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mycode/model/local/Code.dart';
+import 'package:mycode/service/MemberController.dart';
 
 import '../../../service/CodeController.dart';
 
 class CodeFilterList extends StatelessWidget {
   final CodeController codeController = Get.find<CodeController>();
+  final MemberController _memberController = Get.find<MemberController>();
 
   @override
   Widget build(BuildContext context) {
     return Obx((){
       List<CodeItem> itemsInHobby = codeController.itemsInHobby.value;
-      List<CodeItem> itemsInHobbyFilter = codeController.itemsInHobbyFilter.value;
+      List<CodeItem> itemsInHobbyFilter = _memberController.itemsInHobbyFilter.value;
       bool isItemsView = codeController.isItemsView.value;
 
       return Positioned(
         child: Column(
           children: [
+            if (isItemsView)
             Container(
               decoration: BoxDecoration(color: Colors.white),
               child: Column(
                 children: [
-                  if (isItemsView) Container(
+                  Container(
                     decoration: BoxDecoration(
                       color: Colors.transparent, // 배경 없음
                     ),
@@ -40,7 +43,7 @@ class CodeFilterList extends StatelessWidget {
                             ? Container(
                               padding: EdgeInsets.all(3),
                               decoration: BoxDecoration(
-                                color: Colors.black54,
+                                color: Colors.orange,
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
@@ -52,11 +55,14 @@ class CodeFilterList extends StatelessWidget {
                               ),
                             )
                             : GestureDetector(
-                            onTap: () => codeController.addItemsInHobbyFilter(itemsInHobby[index]),
+                            onTap: () {
+                              _memberController.addItemsInHobbyFilter(itemsInHobby[index]);
+                              _memberController.updateFilterAndSelectMemberListByMap();
+                            },
                             child: Container(
                               padding: EdgeInsets.all(3),
                               decoration: BoxDecoration(
-                                color: Colors.blueAccent,
+                                color: Colors.black54,
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
@@ -73,12 +79,14 @@ class CodeFilterList extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (isItemsView) Center(
+
+                  // 완료 click 시 선택view 닫기 및 필터 저장
+                  Center(
                     child: GestureDetector(
-                      onTap: () => codeController.searchUserListWithFilter(),
+                      onTap: () => print("채워야해"),
                       child: Container(
                         decoration: BoxDecoration(color: Colors.blue),
-                        child: Text("완료"),
+                        child: Text("전체선택"),
                       ),
                     ),
                   ),
@@ -97,11 +105,14 @@ class CodeFilterList extends StatelessWidget {
                   runSpacing: 6.0, // 줄 간의 수직 간격
                   children: List.generate(itemsInHobbyFilter.length, (index) {
                     return GestureDetector(
-                      onTap: () => codeController.removeItemsInHobbyFilter(itemsInHobbyFilter[index]),
+                      onTap: () {
+                          _memberController.removeItemsInHobbyFilter(itemsInHobbyFilter[index]);
+                          _memberController.updateFilterAndSelectMemberListByMap();
+                        },
                       child: Container(
                         padding: EdgeInsets.all(3),
                         decoration: BoxDecoration(
-                          color: Colors.grey,
+                          color: Colors.orange,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Row(

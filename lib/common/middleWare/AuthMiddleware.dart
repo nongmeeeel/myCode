@@ -1,22 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/routes/route_middleware.dart';
+import 'package:mycode/common/auth/KakaoTokenUtil.dart';
 
-import '../../service/AuthController.dart';
+import '../../service/MemberController.dart';
+import '../auth/TokenUtil.dart';
+
 
 class AuthMiddleware extends GetMiddleware {
+  final MemberController m = Get.find<MemberController>();
 
   @override
   RouteSettings? redirect(String? route) {
-    final AuthController authController = Get.find<AuthController>();
-
-    // 비동기 처리가 필요할 경우, 미들웨어의 redirect에서 비동기 처리를 지원하지 않으므로, 동기적으로 처리해야 함
-    if (authController.isLogin.value) {
-      return null; // 인증된 경우, 원래 라우트로 이동
-    } else {
-      print('---- AuthAPI 요청 ----');
-      return RouteSettings(name: '/login'); // 인증되지 않은 경우 로그인 페이지로 리다이렉트
+    // 로그인 상태 체크
+    if (!m.isLogin()) {
+      // 로그인 상태가 아니면 로그인 페이지로 리디렉션
+      return const RouteSettings(name: '/login');
     }
+
+    // isMember가 false이면 회원가입 페이지로 리디렉션
+    if (!m.isMember()) {
+      return const RouteSettings(name: '/sign'); // 회원가입 페이지로 설정
+    }
+
+    // 조건을 충족하면 null 반환하여 원래 요청한 라우트로 이동
+    return null;
   }
 }

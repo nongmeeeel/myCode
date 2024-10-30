@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:mycode/model/local/User.dart';
-import 'package:mycode/service/UserController.dart';
+import 'package:mycode/model/local/Member.dart';
+import 'package:mycode/service/MemberController.dart';
 import 'package:mycode/view/screen/my_map/MyMap.dart';
 import 'package:mycode/view/screen/my_map/MyMapSetting.dart';
 
@@ -11,13 +11,13 @@ import '../../model/third_party/TownOne.dart';
 import '../../service/TownController.dart';
 
 class MyMapScreen extends StatelessWidget {
-  final UserController _userController = Get.find<UserController>();
+  final MemberController _memberController = Get.find<MemberController>();
 
   @override
   Widget build(BuildContext context) {
 
     return Obx(() {
-      TownOne? userTown = _userController.userTown.value;
+      TownOne? userTown = _memberController.memberTown.value;
       print("확인2");
       return Scaffold(
         appBar: AppBar(
