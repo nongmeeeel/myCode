@@ -1,9 +1,10 @@
 import 'dart:ffi';
 
-import 'package:mycode/model/local/UserTown.dart';
+import 'package:mycode/model/local/MemberTown.dart';
+import 'package:mycode/model/third_party/Town.dart';
 
 class Member {
-  final String id;
+  final int id;
   final String loginType;
   final String? kakaoNickname;
   final String name;
@@ -11,7 +12,7 @@ class Member {
   final String birthDate;
   final String email;
   final String? phoneNumber;
-  final UserTown memberTown;
+  final MemberTown memberTown;
   final String? role;
 
   Member({
@@ -29,7 +30,7 @@ class Member {
 
   factory Member.fromJson(Map<String, dynamic> json) {
     return Member(
-      id: json['id'].toString(),
+      id: json['id'],
       loginType: json['loginType'],
       kakaoNickname: json['kakaoNickname'],
       name: json['name'],
@@ -37,7 +38,7 @@ class Member {
       birthDate: json['birthDate'],
       email: json['email'],
       phoneNumber: json['phoneNumber'],
-      memberTown: UserTown.fromJson(json['memberTown']),
+      memberTown: MemberTown.fromJson(json['memberTown']),
       role: json['role'],
     );
   }

@@ -20,6 +20,7 @@ class InitScreen extends StatelessWidget {
     final CodeController codeController = Get.find<CodeController>();
 
     return Obx(() {
+
       var isInit = memberController.isInit.value;
       var isLogin = memberController.isLogin.value;
       var isMember = memberController.isMember.value;
@@ -31,9 +32,8 @@ class InitScreen extends StatelessWidget {
             memberController.fetchMember();
             return Obx((){
               Member? member = memberController.member.value;
-
               if(member != null) {
-                memberController.fetchMemberList();
+                // memberController.selectMemberListByMapInfo();
                 codeController.fetchAllCodeList();
                 return HomeScreen();
               } else {
@@ -50,24 +50,6 @@ class InitScreen extends StatelessWidget {
         }
       }
       return SplashScreen();
-
-
-      // if(kakaoUser == null) {
-      //   return LoginScreen();
-      //
-      // } else {
-      //   memberController.fetchMember();
-      //   return HomeScreen();
-      // }
-      //
-      //   CodeController codeController = Get.put(CodeController());
-      //   Get.put(TownController());
-      //   codeController.fetchAllCodeList();
-      //   return Obx(() {
-      //     List<CodeType> allCodeList = codeController.allCodeList.value;
-      //     return HomeScreen();
-      //   });
-
     });
   }
 }

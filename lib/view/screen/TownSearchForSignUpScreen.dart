@@ -7,7 +7,7 @@ import 'package:mycode/service/TownController.dart';
 import 'package:get/get.dart';
 
 
-class TownSearchScreen extends StatelessWidget {
+class TownSearchForSignUpScreen extends StatelessWidget {
   final TownController _townController = Get.find<TownController>();
   final MemberController _memberController = Get.find<MemberController>();
 
@@ -15,7 +15,7 @@ class TownSearchScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("")
+          title: Text("")
       ),
       body: Container(
         padding: EdgeInsets.all(15.0),
@@ -28,7 +28,7 @@ class TownSearchScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20.0), // 모서리 둥글게
               ),
               child: Obx(
-                () => TextField(
+                    () => TextField(
                   controller: TextEditingController(
                     text: _townController.townSearchText.value,
                   ),
@@ -52,8 +52,8 @@ class TownSearchScreen extends StatelessWidget {
                 child: Text(
                   "현재 위치로 찾기",
                   style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold),
                 ),onPressed: (){},
               ),
             ),
@@ -69,13 +69,7 @@ class TownSearchScreen extends StatelessWidget {
                       return ListTile(
                         title: Text(townList[index].title),
                         onTap: () {
-                          _memberController.updateMemberTown(townList[index]);
-                          Get.back();
-                          Get.snackbar(
-                            "동네가 변경되었습니다.",
-                            "${townList[index].title}으로 설정되었습니다.",
-                            snackPosition: SnackPosition.TOP,
-                          );
+                          Get.back(result: townList[index]);
                         },
                       );
                     },

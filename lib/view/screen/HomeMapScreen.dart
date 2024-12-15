@@ -15,19 +15,18 @@ import 'package:mycode/view/screen/home_map/CodeGridView.dart';
 
 import '../../common/FunctionUtil.dart';
 import '../../model/local/Code.dart';
-import '../../model/third_party/TownOne.dart';
-import 'home_map/UserMap.dart';
+import 'home_map/HomeMap.dart';
 
 class HomeMapScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          child: CodeGridView(),
-        ),
+        // Container(
+        //   child: CodeGridView(),
+        // ),
         Expanded(
-            child: UserMap()
+            child: MemberMap()
         ),
       ],
     );

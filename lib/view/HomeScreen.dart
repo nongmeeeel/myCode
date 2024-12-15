@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:mycode/Temp.dart';
+import 'package:mycode/repository/local/MemberRepository.dart';
 import 'package:mycode/service/CodeController.dart';
 import 'package:mycode/service/MemberController.dart';
 import 'package:mycode/service/TownController.dart';
 import 'package:mycode/view/SignScreen.dart';
+import 'package:mycode/view/screen/ChatRoomsView.dart';
 import 'package:mycode/view/screen/HomeProfileScreen.dart';
 import 'package:mycode/view/LoginScreen.dart';
 import '../model/local/Code.dart';
@@ -22,7 +23,19 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final MemberController memberController = Get.find<MemberController>();
   int _currentIndex = 1;
-  Widget _currentPage = HomeMapScreen();
+  late ChatRoomsView _chatRoomView;
+  late HomeMapScreen _homeMapScreen;
+  late HomeProfileScreen _homeProfileScreen;
+  // late Widget _currentPage;
+
+  @override
+  void initState() {
+    super.initState();
+    _chatRoomView = ChatRoomsView();
+    _homeMapScreen = HomeMapScreen();
+    _homeProfileScreen = HomeProfileScreen();
+    // _currentPage = _homeMapScreen; // 초기 페이지 설정
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Container(
           width: 150,
           child: TextButton(
-              onPressed: () => Get.toNamed('/home/map'),
+              onPressed: () => Get.toNamed('/setting/town'),
               child: Row(
                 children: [
                   Text(
@@ -84,7 +97,14 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
 
-      body: _currentPage,
+      body: IndexedStack(
+        index: _currentIndex,
+        children: [
+          _chatRoomView,
+          _homeMapScreen,
+          _homeProfileScreen,
+        ],
+      ),
 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -92,8 +112,8 @@ class _HomeScreenState extends State<HomeScreen> {
         unselectedItemColor: Colors.black,
         items: [
           BottomNavigationBarItem(
-              label: "내 정보",
-              icon: Icon(Icons.person)
+              label: "채팅",
+              icon: Icon(Icons.chat_bubble_outline)
           ),
           BottomNavigationBarItem(
               label: "내 주변",
@@ -103,39 +123,25 @@ class _HomeScreenState extends State<HomeScreen> {
               label: "프로필",
               icon: Icon(Icons.person_2_outlined)
           ),
-          BottomNavigationBarItem(
-              label: "로그인",
-              icon: Icon(Icons.person_2_outlined)
-          ),
-          BottomNavigationBarItem(
-              label: "가입페이지",
-              icon: Icon(Icons.person_2_outlined)
-          )
         ],
         onTap: (int index) {
           setState(() {
             _currentIndex = index;
-            switch (_currentIndex) {
-              case 0:
-                _currentPage = HomeInfoScreen();
-                print("0입니다.");
-                break;
-              case 1:
-                _currentPage = HomeMapScreen();
-                break;
-              case 2:
-                _currentPage = HomeProfileScreen();
-                break;
-              case 3:
-                _currentPage = Temp();
-                break;
-              case 4:
-                _currentPage = SignScreen();
-                break;
-              default:
-                _currentPage = Container(); // 예외 처리: 기본적으로 빈 컨테이너를 표시
-                break;
-            }
+            // switch (_currentIndex) {
+            //   case 0:
+            //     _currentPage = _homeInfoScreen;
+            //     print("0입니다.");
+            //     break;
+            //   case 1:
+            //     _currentPage = _homeMapScreen;
+            //     break;
+            //   case 2:
+            //     _currentPage = _homeProfileScreen;
+            //     break;
+            //   default:
+            //     _currentPage = Container(); // 예외 처리: 기본적으로 빈 컨테이너를 표시
+            //     break;
+            // }
           });
         },
       ),

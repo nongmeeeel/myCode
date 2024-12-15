@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:mycode/service/ChatController.dart';
 import 'package:mycode/service/CodeController.dart';
 import 'package:mycode/service/MemberController.dart';
 import 'package:mycode/service/TownController.dart';
@@ -12,16 +14,21 @@ import 'package:mycode/view/HomeScreen.dart';
 import 'package:mycode/view/InitScreen.dart';
 import 'package:mycode/view/LoginScreen.dart';
 import 'package:mycode/view/SignScreen.dart';
-import 'package:mycode/view/screen/MyMapScreen.dart';
+import 'package:mycode/view/screen/ChatRoomsView.dart';
+import 'package:mycode/view/screen/SettingCodeScreen.dart';
+import 'package:mycode/view/screen/SettingTownScreen.dart';
 import 'package:mycode/view/screen/TownSearchScreen.dart';
+import 'package:mycode/view/screen/SettingMemberScreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // CONTROLLER 초기화
-  Get.put(MemberController());
   Get.put(CodeController());
   Get.put(TownController());
+  Get.put(ChatController());
+  Get.put(MemberController());
+
 
   await _initialize();
 
@@ -48,14 +55,28 @@ class MyCode extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "마이코드",
       initialRoute: '/',
+      locale: Locale('ko', 'KR'), // 기본 언어 설정
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('en', 'US'),
+        const Locale('ko', 'KR'), // 한국어 추가
+      ],
       getPages:  [
         GetPage(name: '/', page: () => InitScreen(), transition: Transition.leftToRight),
         GetPage(name: '/home', page: () => HomeScreen(), transition: Transition.leftToRight,),
         GetPage(name: '/login', page: () => LoginScreen(), transition: Transition.leftToRight),
         GetPage(name: '/sign', page: () => SignScreen(), transition: Transition.leftToRight),
 
-        GetPage(name: '/home/map', page: () => MyMapScreen(), transition: Transition.downToUp,),
-        GetPage(name: '/home/map/townsearch', page: () => TownSearchScreen(), transition: Transition.rightToLeft)
+        GetPage(name: '/setting/town', page: () => SettingTownScreen(), transition: Transition.downToUp,),
+        GetPage(name: '/setting/town/townsearch', page: () => TownSearchScreen(), transition: Transition.rightToLeft),
+        GetPage(name: '/setting/code', page: () => SettingCodeScreen(), transition: Transition.downToUp,),
+        GetPage(name: '/setting/member', page: () => SettingMemberScreen(), transition: Transition.downToUp,),
+
+        GetPage(name: '/chat', page: () => ChatRoomsView(), transition: Transition.downToUp,),
       ],
     );
   }

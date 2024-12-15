@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-
+import 'package:mycode/model/third_party/Town.dart';
+import 'package:mycode/view/screen/TownSearchForSignUpScreen.dart';
 import '../service/MemberController.dart';
 
 class SignScreen extends StatelessWidget {
@@ -10,7 +10,6 @@ class SignScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final MemberController memberController = Get.find<MemberController>();
-
 
     return Scaffold(
       body: Stack(
@@ -71,62 +70,115 @@ class SignScreen extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        TextField(
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Username',
-                            prefixIcon: Icon(Icons.person),
-                          ),
+                        Row(
+                          children: [
+                            // 이름 입력
+                            Expanded(
+                              child: TextField(
+                                controller: memberController.signFormNameController,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: '이름',
+                                  prefixIcon: Icon(Icons.person),
+                                ),
+                                onChanged: (_) => memberController.checkSignFormValid(),
+                              ),
+                            ),
+                            SizedBox(width: 16),
+                            // 성별 선택 버튼
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Obx(() => ChoiceChip(
+                                  label: Text('남'),
+                                  selected: memberController.signFormGender.value == '남',
+                                  onSelected: (_) => memberController.setSignFormGender('남'),
+                                )),
+                                SizedBox(width: 16),
+                                Obx(() => ChoiceChip(
+                                  label: Text('여'),
+                                  selected: memberController.signFormGender.value == '여',
+                                  onSelected: (_) => memberController.setSignFormGender('여'),
+                                )),
+                              ],
+                            ),
+                          ],
                         ),
                         SizedBox(height: 16),
-                        TextField(
+                        // 생년월일 선택
+                        Obx(() => TextField(
+                          readOnly: true,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
-                            labelText: 'Email',
-                            prefixIcon: Icon(Icons.email),
+                            labelText: '생년월일',
+                            prefixIcon: Icon(Icons.calendar_today),
                           ),
-                        ),
-                        SizedBox(height: 16),
-                        TextField(
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Password',
-                            prefixIcon: Icon(Icons.lock),
-                          ),
-                        ),
-                        SizedBox(height: 24),
-                        ElevatedButton(
-                          onPressed: () {
-                            // 가입 로직
+                          onTap: () async {
+                            final DateTime? pickedDate = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime(2000),
+                              firstDate: DateTime(1900),
+                              lastDate: DateTime.now(),
+                              locale: const Locale("ko", "KR"), // 한국어로 변경
+                            );
+                            if (pickedDate != null) {
+                              memberController.setSignFormBirthDate(pickedDate);
+                            }
                           },
-                          child: Text('Sign Up'),
+                          controller: TextEditingController(
+                            text: memberController.signFormBirthDate.value != null
+                                ? '${memberController.signFormBirthDate.value!.year}-${memberController.signFormBirthDate.value!.month.toString().padLeft(2, '0')}-${memberController.signFormBirthDate.value!.day.toString().padLeft(2, '0')}'
+                                : '',
+                          ),
+                        )),
+                        SizedBox(height: 24),
+                        Obx(() => TextField(
+                          readOnly: true,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: '주소',
+                            prefixIcon: Icon(Icons.location_on),
+                          ),
+                          onTap: () async {
+                            // SignMapScreen으로 이동
+                            Town townResult = await Get.to(() => TownSearchForSignUpScreen());
+                              memberController.setSignFormTown(townResult);
+                          },
+                          controller: TextEditingController(
+                            text: memberController.signFormTown.value != null
+                                ? '${memberController.signFormTown.value!.title}'
+                                : '',
+                          ),
+                        )),
+
+                        SizedBox(height: 24),
+                        // '다음' 버튼
+                        Obx(() => ElevatedButton(
+                          onPressed: memberController.isSignFormValid.value ? () {
+                            memberController.signUp();
+                          } : null,
+                          child: Text('시작하기'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blueAccent, // 배경 색상
+                            backgroundColor: Colors.blueAccent,
                             padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                            textStyle: TextStyle(fontSize: 18),
+                            textStyle: TextStyle(fontSize: 17),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                        ),
+                        )),
                         SizedBox(height: 16),
+                        // 로그아웃 버튼
                         Container(
                           child: ElevatedButton(
                             onPressed: () {
                               memberController.logout();
-                            } ,
+                            },
                             child: Text('Logout'),
                           ),
                         ),
-                        TextButton(
-                          onPressed: () {
-                            // 로그인 페이지로 이동
-                          },
-                          child: Text('Already have an account? Sign In'),
-                        ),
                       ],
-                    ),
+                    )
                   ),
                 ],
               ),

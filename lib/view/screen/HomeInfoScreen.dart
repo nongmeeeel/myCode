@@ -49,7 +49,7 @@ class HomeInfoScreen extends StatelessWidget {
             ],
           ),
           ElevatedButton(
-            onPressed: () => _townRepository.getTownByTownCodeAPI("ㅎㅇ"),
+            onPressed: () => print("ㅎㅇ"),
             child: Text("버튼이다잇")
           )
         ],

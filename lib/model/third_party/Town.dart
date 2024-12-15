@@ -1,24 +1,30 @@
 class Town {
-  final String emdCd;
-  final String fullNm;
-  final String emdKorNm;
-  final String emdEngNm;
-  // final List<List<double>> coordinates;
+  final String id;
+  final String title;
+  final double x;
+  final double y;
+
 
   Town({
-    required this.emdCd,
-    required this.fullNm,
-    required this.emdKorNm,
-    required this.emdEngNm,
-    // required this.coordinates,
+    required this.id,
+    required this.title,
+    required this.x,
+    required this.y
   });
 
-  factory Town.fromJson(Map<String, dynamic> json) {
-    return Town(
-      emdCd: json['properties']['emd_cd'],
-      fullNm: json['properties']['full_nm'],
-      emdKorNm: json['properties']['emd_kor_nm'],
-      emdEngNm: json['properties']['emd_eng_nm']
-    );
+  factory Town.fromJson(Map<String, dynamic> json) => Town(
+    id: json["id"],
+    title: json["title"],
+    x: double.parse(json["point"]["x"]),
+    y: double.parse(json["point"]["y"])
+  );
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'x': x,
+      'y': y,
+    };
   }
 }

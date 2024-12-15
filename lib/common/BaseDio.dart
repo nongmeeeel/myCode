@@ -11,8 +11,8 @@ class BaseDio {
   BaseDio(String basePath)
       : dio = Dio(BaseOptions(
     baseUrl: 'http://10.0.2.2:8080/api/v1' + basePath,
-    connectTimeout: Duration(milliseconds: 50000),
-    receiveTimeout: Duration(milliseconds: 30000),
+    connectTimeout: Duration(milliseconds: 500000),
+    receiveTimeout: Duration(milliseconds: 300000),
     headers: {
       'Content-Type': 'application/json',
     },
@@ -78,6 +78,8 @@ class BaseDio {
             print('@@@@@@ 끝 @@@@@@');
             memberController.logout();
           }
+        } else if (errorCode == 9000 || errorCode == 9001 || errorCode == 9003){
+          memberController.logout();
         }
         return handler.next(e);
       },

@@ -11,23 +11,22 @@ class TownController extends GetxController {
   final TownRepository _townRepository = TownRepository();
 
   RxList<Town> townList = <Town>[].obs;
-  RxString searchText = "".obs;
+  RxString townSearchText = "".obs;
 
   @override
   void onInit() {
     super.onInit();
-    debounce(searchText, (_) => selectTownListByTownNmAPI(searchText.value), time: Duration(milliseconds: 300));
+    debounce(townSearchText, (_) => searchTownListByTownNmAPI(townSearchText.value), time: Duration(milliseconds: 500));
   }
 
   // '동' 리스트 가져오기
-  Future<void> selectTownListByTownNmAPI(String townNm) async {
-    List<Town> townListResult = await _townRepository.selectTownListByTownNmAPI(townNm);
-    townList.assignAll(townListResult);
-    update();
+  Future<void> searchTownListByTownNmAPI(String townNm) async {
+    List<Town> result = await _townRepository.searchTownListByTownNmAPI(townNm);
+    townList.assignAll(result);
   }
 
-  void searchTextChange(String text) {
-    searchText.value = text;
+  void townSearchTextChange(String text) {
+    townSearchText.value = text;
   }
 
 }
