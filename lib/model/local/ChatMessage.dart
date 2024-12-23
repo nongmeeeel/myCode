@@ -4,11 +4,11 @@ class ChatMessage {
   final int senderId;
   final String content;
   final String type;
-  final String sendAt; // LocalDateTime -> String으로 처리
+  final String sendAt;
   final String readStatus;
 
   ChatMessage({
-    required this.id,
+    this.id,
     required this.chatId,
     required this.senderId,
     required this.content,
@@ -36,8 +36,8 @@ class ChatMessage {
       senderId: json['senderId'],
       content: json['content'],
       type: json['type'],
-      sendAt: json['sendAt'], // LocalDateTime을 String으로 변환
+      sendAt: json['sendAt'],
       readStatus: json['readStatus'],
     );
   }
-}
+} 

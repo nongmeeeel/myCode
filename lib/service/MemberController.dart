@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -7,10 +6,12 @@ import 'package:get/get_rx/get_rx.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:mycode/common/WebSocketManager.dart';
 import 'package:mycode/common/auth/TokenUtil.dart';
 import 'package:mycode/model/local/Code.dart';
 import 'package:mycode/model/local/request/SignUpRequestDTO.dart';
 import 'package:mycode/repository/local/CodeRepository.dart';
+import 'package:mycode/service/ChatController.dart';
 import 'package:mycode/service/CodeController.dart';
 import 'package:mycode/service/TownController.dart';
 import '../model/local/MapInfo.dart';
@@ -30,6 +31,8 @@ class MemberController extends GetxController {
   final MemberRepository _memberRepository = MemberRepository();
   final CodeController _codeController = Get.find<CodeController>();
   final TownController _townController = Get.find<TownController>();
+  final ChatController _chatController = Get.find<ChatController>();
+  final WebSocketManager webSocketManager = WebSocketManager();
   final KakaoTokenUtil kakaoTokenUtil = KakaoTokenUtil();
   final KakaoLoginUtil kakaoLoginUtil = KakaoLoginUtil();
 
@@ -77,10 +80,6 @@ class MemberController extends GetxController {
     westLng: 127.10579,
   ).obs;
 
-
-
-
-
   @override
   void onInit() {
     super.onInit();
@@ -93,16 +92,19 @@ class MemberController extends GetxController {
     super.onClose();
   }
 
-
-
-
+  Future<void> fetchAll() async {
+    webSocketManager.initialize();
+    _codeController.fetchAllCodeList();
+    _chatController.fetchUserChatRooms();
+  }
 
 //------------------------MEMBER 로직----------------------------//
   // 멤버 정보 FETCH
   Future<void> fetchMember() async {
-    FetchMemberResponseDTO? fetchMemberResponseDTO = await _memberRepository.fetchMemberAPI();
+    FetchMemberResponseDTO? fetchMemberResponseDTO =
+        await _memberRepository.fetchMemberAPI();
 
-    if(fetchMemberResponseDTO != null) {
+    if (fetchMemberResponseDTO != null) {
       Member _member = fetchMemberResponseDTO.member;
       List<MemberCode> _memberCodeList = fetchMemberResponseDTO.memberCodeList;
 
@@ -110,14 +112,16 @@ class MemberController extends GetxController {
       memberTown.value = _member.memberTown;
       memberCodeList.value = _memberCodeList;
 
-      // CodeType? _codeTypeHobby = _codeTypeList
-      //     .where((item) => item.title == '취미')
-      //     .firstOrNull;
-      // if(_codeTypeHobby != null){
-      //   memberHobby.value = _codeTypeHobby;
-      //   var temp = 1;
-      // }
+      // 멤버 정보 로드 후 다른 초기화 작업 수행
+      await initializeServices();
     }
+  }
+
+  Future<void> initializeServices() async {
+    // 순서가 중요한 초기화 작업들
+    await webSocketManager.initialize(); // 웹소켓 먼저 초기화
+    await _codeController.fetchAllCodeList();
+    await _chatController.fetchUserChatRooms();
   }
 
   // 멤버 리스트 정보 FETCH
@@ -134,7 +138,8 @@ class MemberController extends GetxController {
       'southWestLat': mapInfo.value!.westLat,
       'southWestLng': mapInfo.value!.westLng,
     };
-    List<Member> memberList = await _memberRepository.selectMemberListByMapInfoAPI(data);
+    List<Member> memberList =
+        await _memberRepository.selectMemberListByMapInfoAPI(data);
 
     mapMemberList.assignAll(memberList);
     return memberList;
@@ -142,46 +147,37 @@ class MemberController extends GetxController {
 
   Future<void> updateMember() async {
     DateTime date = memberFormBirthDate.value!;
-    String formattedDate = '${date.year}${date.month.toString().padLeft(2, '0')}${date.day.toString().padLeft(2, '0')}';
+    String formattedDate =
+        '${date.year}${date.month.toString().padLeft(2, '0')}${date.day.toString().padLeft(2, '0')}';
 
-    Member? result = await _memberRepository.updateMember(memberFormNameController.text, memberFormGender.value, formattedDate);
+    Member? result = await _memberRepository.updateMember(
+        memberFormNameController.text, memberFormGender.value, formattedDate);
     if (result != null) {
       member.value = result;
     }
   }
 
- //----------------------------------------------------//
-
-
-
-
-
+  //----------------------------------------------------//
 
   //------------------------TOWN 로직----------------------------//
   // 멤버 주소 수정
   Future<void> updateMemberTown(Town town) async {
-    memberTown.value = MemberTown(id: town.id, title: town.title, x: town.x, y: town.y);
+    memberTown.value =
+        MemberTown(id: town.id, title: town.title, x: town.x, y: town.y);
     _memberRepository.updateMemberTownAPI(town);
     // update();
   }
 //----------------------------------------------------//
 
-
-
-
-
-
-
 //------------------------CODE 로직----------------------------//
   Future<void> updateMemberCodeMap() async {
     Set<int> selectedItemIdSet = _codeController.selectedItemIdSet;
     await _memberRepository.updateMemberCodeMap(selectedItemIdSet);
-    List<MemberCode> _memberCodeList = await _memberRepository.selectMemberCodeList();
+    List<MemberCode> _memberCodeList =
+        await _memberRepository.selectMemberCodeList();
     memberCodeList.assignAll(_memberCodeList);
   }
 //----------------------------------------------------//
-
-
 
 //-------------------------기타 로직----------------------------//
   void setMapInfo(NLatLngBounds bounds) {
@@ -189,16 +185,10 @@ class MemberController extends GetxController {
         eastLat: bounds.northEast.latitude,
         eastLng: bounds.northEast.longitude,
         westLat: bounds.southWest.latitude,
-        westLng: bounds.southWest.longitude
-    );
+        westLng: bounds.southWest.longitude);
     mapInfo.value = _mapInfo;
   }
 //----------------------------------------------------//
-
-
-
-
-
 
   //------------------------최초 Sign 시 로직----------------------------//
   // 유효성 검사 업데이트 함수
@@ -224,12 +214,8 @@ class MemberController extends GetxController {
 
   // Town 설정 함수
   void setSignFormTown(Town town) {
-    MemberTown memberTown = MemberTown(
-        id: town.id,
-        title: town.title,
-        x: town.x,
-        y: town.y
-    );
+    MemberTown memberTown =
+        MemberTown(id: town.id, title: town.title, x: town.x, y: town.y);
     signFormTown.value = memberTown;
     checkSignFormValid();
   }
@@ -237,20 +223,18 @@ class MemberController extends GetxController {
   // 가입
   void signUp() async {
     DateTime date = signFormBirthDate.value!;
-    String formattedDate = '${date.year}${date.month.toString().padLeft(2, '0')}${date.day.toString().padLeft(2, '0')}';
+    String formattedDate =
+        '${date.year}${date.month.toString().padLeft(2, '0')}${date.day.toString().padLeft(2, '0')}';
 
     SignUpRequestDTO signUpRequestDTO = SignUpRequestDTO(
         name: signFormNameController.text,
         gender: signFormGender.value,
-        birthDate: formattedDate ,
-        memberTown: signFormTown.value!
-    );
+        birthDate: formattedDate,
+        memberTown: signFormTown.value!);
     await _memberRepository.signUpAPI(signUpRequestDTO);
     await checkMemberInfo();
   }
   //----------------------------------------------------//
-
-
 
   //------------------------Member 정보 수정 로직----------------------------//
   // 유효성 검사 업데이트 함수
@@ -273,10 +257,6 @@ class MemberController extends GetxController {
     checkMemberFormValid();
   }
   //----------------------------------------------------//
-
-
-
-
 
 //------------------------로그인,로그아웃 / 인증인가----------------------------//
   // MEMBER 인증, 인가 체크
@@ -301,6 +281,9 @@ class MemberController extends GetxController {
       await _memberRepository.loginAPI(id, 'qwe321!!qwe', 'K', nickname);
     } else {
       // 임시 : login 실패 시 작업 (카카오 로그인 결과 활용)
+      // 채팅 테스트를 위한 임시 코드
+      await _memberRepository.loginAPI(
+          "temp123", 'qwe321!!qwe', 'K', "tempNickname");
     }
     await checkMemberInfo();
   }
@@ -315,14 +298,6 @@ class MemberController extends GetxController {
     checkMemberInfo();
   }
   //----------------------------------------------------//
-
-
-
-
-
-
-
-
 
   // void insertTownTemp() async {
   //   List<String> townCodeList = [

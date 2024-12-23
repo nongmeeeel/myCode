@@ -11,14 +11,11 @@ import '../../model/local/Member.dart';
 import '../../model/local/MemberTown.dart';
 import '../../model/local/response/MemberCode.dart';
 
-
-
 class HomeProfileScreen extends StatelessWidget {
   final MemberController _memberController = Get.find<MemberController>();
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text('내 프로필'),
@@ -41,24 +38,20 @@ class HomeProfileScreen extends StatelessWidget {
               // 멤버 타운
               Obx(() {
                 MemberTown _memberTown = _memberController.memberTown.value!;
-                return _buildTitleAndItem(
-                    '내 지역',
-                    _memberTown.title
-                );
+                return _buildTitleAndItem('내 지역', _memberTown.title);
               }),
-
 
               SizedBox(height: 20.0),
 
               // 멤버 코드
               Obx(() {
-                List<MemberCode?> _memberCodeList = _memberController.memberCodeList.value;
+                List<MemberCode?> _memberCodeList =
+                    _memberController.memberCodeList.value;
                 return _buildTitleAndItemList(
                     '내 코드',
                     _memberCodeList
                         .map((memberCode) => memberCode!.codeItemTitle)
-                        .toList()
-                );
+                        .toList());
               })
 
               // _buildCategorySection(
@@ -198,7 +191,6 @@ class HomeProfileScreen extends StatelessWidget {
     );
   }
 
-
   Widget _buildChipItem(String text) {
     return Container(
       decoration: BoxDecoration(
@@ -216,9 +208,6 @@ class HomeProfileScreen extends StatelessWidget {
       ),
     );
   }
-
-
-
 
   // Widget _buildLikedFriendsSection() {
   //   return Padding(

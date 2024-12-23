@@ -6,14 +6,9 @@ import 'package:get/get_core/src/get_main.dart';
 import '../../service/ChatController.dart';
 import 'ChatDetailView.dart';
 
-class ChatRoomsView extends StatelessWidget {
-  final ChatController _chatController = Get.find();
-
+class ChatRoomsView extends GetView<ChatController> {
   @override
   Widget build(BuildContext context) {
-    _chatController.fetchUserChatRooms();
-    final member = Get.arguments;
-
     return Scaffold(
       appBar: AppBar(
         title: Text('채팅 목록'),
@@ -25,24 +20,26 @@ class ChatRoomsView extends StatelessWidget {
         ],
       ),
       body: Obx(() {
-        if (_chatController.isLoading.value) {
+        if (controller.isLoadingChatList.value) {
           return Center(child: CircularProgressIndicator());
         }
 
-        if (_chatController.error.value != null) {
-          return Center(
-            child: Text('오류: ${_chatController.error.value}'),
-          );
+        if (controller.error.value != null) {
+          return Center(child: Text('오류: ${controller.error.value}'));
+        }
+
+        if (controller.chatList.isEmpty) {
+          return Center(child: Text('채팅방이 없습니다'));
         }
 
         return ListView.builder(
-          itemCount: _chatController.chatList.length,
+          itemCount: controller.chatList.length,
           itemBuilder: (context, index) {
-            final chatRoom = _chatController.chatList[index];
+            final chatRoom = controller.chatList[index];
             return ListTile(
               title: Text(chatRoom.title),
-              subtitle: Text(chatRoom.lastMessage ?? '메시지 없음'),
-              trailing: Text('${chatRoom.participantCount}명'),
+              subtitle: Text(chatRoom.lastMessage ?? ''),
+              trailing: Text('참여자: ${chatRoom.chatMembers.length}명'),
               onTap: () => Get.to(() => ChatDetailView(chatRoom: chatRoom)),
             );
           },
@@ -55,9 +52,8 @@ class ChatRoomsView extends StatelessWidget {
     final titleController = TextEditingController();
     final memberController = TextEditingController();
 
-    showDialog(
-      context: Get.context!,
-      builder: (context) => AlertDialog(
+    Get.dialog(
+      AlertDialog(
         title: Text('새 채팅방 생성'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -68,8 +64,7 @@ class ChatRoomsView extends StatelessWidget {
             ),
             TextField(
               controller: memberController,
-              decoration: InputDecoration(
-                  labelText: '초대할 멤버 ID (쉼표로 구분)'),
+              decoration: InputDecoration(labelText: '초대할 멤버 ID (쉼표로 구분)'),
             ),
           ],
         ),
@@ -80,16 +75,21 @@ class ChatRoomsView extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              final memberIds = memberController.text
-                  .split(',')
-                  .map((id) => int.parse(id.trim()))
-                  .toList();
-              _chatController.createChatRoom(
-                titleController.text,
-                'GROUP',
-                memberIds,
-              );
-              Get.back();
+              if (titleController.text.isNotEmpty &&
+                  memberController.text.isNotEmpty) {
+                final memberIds = memberController.text
+                    .split(',')
+                    .map((id) => int.tryParse(id.trim()))
+                    .where((id) => id != null)
+                    .map((id) => id!)
+                    .toList();
+
+                controller.createChatRoom(
+                  titleController.text,
+                  'GROUP',
+                  memberIds,
+                );
+              }
             },
             child: Text('생성'),
           ),

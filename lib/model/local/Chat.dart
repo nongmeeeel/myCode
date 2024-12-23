@@ -1,28 +1,34 @@
+import 'package:mycode/model/local/ChatMember.dart';
+
 class Chat {
   final int id;
   final String title;
   final String type;
-  final int participantCount;
   final String? lastMessage;
-  final String? lastMessageTime; // LocalDateTime -> String으로 처리
+  final String? lastMessageTime;
+  final List<ChatMember> chatMembers;  // ChatMember 리스트로 변경
 
   Chat({
     required this.id,
     required this.title,
     required this.type,
-    required this.participantCount,
     this.lastMessage,
     this.lastMessageTime,
+    required this.chatMembers,
   });
+
+  // participants getter 추가
+  List<int> get participants => 
+      chatMembers.map((member) => member.memberId).toList();
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'title': title,
       'type': type,
-      'participantCount': participantCount,
       'lastMessage': lastMessage,
       'lastMessageTime': lastMessageTime,
+      'chatMembers': chatMembers.map((m) => m.toJson()).toList(),
     };
   }
 
@@ -31,9 +37,11 @@ class Chat {
       id: json['id'],
       title: json['title'],
       type: json['type'],
-      participantCount: json['participantCount'],
       lastMessage: json['lastMessage'],
-      lastMessageTime: json['lastMessageTime'], // LocalDateTime을 String으로 변환
+      lastMessageTime: json['lastMessageTime'],
+      chatMembers: (json['chatMembers'] as List)
+          .map((m) => ChatMember.fromJson(m))
+          .toList(),
     );
   }
 }

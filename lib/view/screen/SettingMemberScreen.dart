@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mycode/model/third_party/Town.dart';
 import 'package:mycode/view/screen/TownSearchForSignUpScreen.dart';
 import '../../service/MemberController.dart';
 
@@ -76,53 +75,59 @@ class SettingMemberScreen extends StatelessWidget {
                               // 이름 입력
                               Expanded(
                                 child: TextField(
-                                  controller: memberController.memberFormNameController,
+                                  controller:
+                                      memberController.memberFormNameController,
                                   decoration: InputDecoration(
                                     border: OutlineInputBorder(),
                                     labelText: '이름',
                                     prefixIcon: Icon(Icons.person),
                                   ),
-                                  onChanged: (_) => memberController.checkMemberFormValid(),
+                                  onChanged: (_) =>
+                                      memberController.checkMemberFormValid(),
                                 ),
                               ),
                               SizedBox(width: 16),
 
                               // 성별 선택
                               Obx(() {
-                                String memberFormGender = memberController.memberFormGender.value;
-                                return  Row(
+                                String memberFormGender =
+                                    memberController.memberFormGender.value;
+                                return Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     ChoiceChip(
                                       label: Text('남'),
                                       selected: memberFormGender == '남',
-                                      onSelected: (_) => memberController.setMemberFormGender('남'),
+                                      onSelected: (_) => memberController
+                                          .setMemberFormGender('남'),
                                     ),
                                     SizedBox(width: 16),
                                     ChoiceChip(
                                       label: Text('여'),
                                       selected: memberFormGender == '여',
-                                      onSelected: (_) => memberController.setMemberFormGender('여'),
+                                      onSelected: (_) => memberController
+                                          .setMemberFormGender('여'),
                                     ),
                                   ],
                                 );
                               })
-
                             ],
                           ),
                           SizedBox(height: 16),
                           // 생년월일 선택
                           Obx(() {
-                            DateTime? memberFormBirthDate = memberController.memberFormBirthDate.value;
+                            DateTime? memberFormBirthDate =
+                                memberController.memberFormBirthDate.value;
                             return TextField(
                               readOnly: true,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: '생년월일',
-                                prefixIcon: Icon(Icons.calendar_today) ,
+                                prefixIcon: Icon(Icons.calendar_today),
                               ),
                               onTap: () async {
-                                final DateTime? pickedDate = await showDatePicker(
+                                final DateTime? pickedDate =
+                                    await showDatePicker(
                                   context: context,
                                   initialDate: DateTime(2000),
                                   firstDate: DateTime(1900),
@@ -130,7 +135,8 @@ class SettingMemberScreen extends StatelessWidget {
                                   locale: const Locale("ko", "KR"), // 한국어로 변경
                                 );
                                 if (pickedDate != null) {
-                                  memberController.setMemberFormBirthDate(pickedDate);
+                                  memberController
+                                      .setMemberFormBirthDate(pickedDate);
                                 }
                               },
                               controller: TextEditingController(
@@ -144,20 +150,27 @@ class SettingMemberScreen extends StatelessWidget {
                           SizedBox(height: 24),
                           // '다음' 버튼
                           Obx(() => ElevatedButton(
-                            onPressed: memberController.isMemberFormValid.value ? () {
-                              memberController.updateMember();
-                              Get.back();
-                            } : null,
-                            child: Text('수정',style: TextStyle(color: Colors.white70),),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blueAccent,
-                              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                              textStyle: TextStyle(fontSize: 17),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          )),
+                                onPressed:
+                                    memberController.isMemberFormValid.value
+                                        ? () {
+                                            memberController.updateMember();
+                                            Get.back();
+                                          }
+                                        : null,
+                                child: Text(
+                                  '수정',
+                                  style: TextStyle(color: Colors.white70),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blueAccent,
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 12, horizontal: 24),
+                                  textStyle: TextStyle(fontSize: 17),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              )),
                           SizedBox(height: 16),
                           // 로그아웃 버튼
                           Container(
@@ -169,8 +182,7 @@ class SettingMemberScreen extends StatelessWidget {
                             ),
                           ),
                         ],
-                      )
-                  ),
+                      )),
                 ],
               ),
             ),
