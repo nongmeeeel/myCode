@@ -3,8 +3,6 @@ import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 import 'dart:async';
 import '../common/auth/TokenUtil.dart';
-import 'dart:convert';
-import 'package:mycode/model/local/ChatMessage.dart';
 
 class WebSocketManager {
   static final WebSocketManager _instance = WebSocketManager._internal();

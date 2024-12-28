@@ -1,8 +1,5 @@
-import 'dart:ffi';
-
 import 'package:dio/dio.dart';
 
-import '../../common/Interceptor.dart';
 import '../../common/FunctionUtil.dart';
 import '../../model/third_party/Town.dart';
 
@@ -26,8 +23,8 @@ class TownRepository {
         case "ERROR":
           return [];
         case "OK":
-          final List<dynamic> responseData = response.data['response']['result']
-              ['items'];
+          final List<dynamic> responseData =
+              response.data['response']['result']['items'];
           return responseData.map((json) => Town.fromJson(json)).toList();
         default:
           throw Exception(

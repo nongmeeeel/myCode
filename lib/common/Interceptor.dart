@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:mycode/service/MemberController.dart';
 
 class AuthApiInterceptor extends Interceptor {

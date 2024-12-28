@@ -1,17 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart'
-    as kakao_user;
-import 'package:mycode/service/ChatController.dart';
 import 'package:mycode/view/HomeScreen.dart';
 import 'package:mycode/view/LoginScreen.dart';
 import 'package:mycode/view/SplashScreen.dart';
 
-import '../model/local/Code.dart';
 import '../model/local/Member.dart';
-import '../service/CodeController.dart';
-import '../service/TownController.dart';
 import '../service/MemberController.dart';
 import 'SignScreen.dart';
 
@@ -19,8 +12,6 @@ class InitScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final MemberController memberController = Get.find<MemberController>();
-    final CodeController codeController = Get.find<CodeController>();
-    final ChatController chatController = Get.find<ChatController>();
 
     return Obx(() {
       var isInit = memberController.isInit.value;

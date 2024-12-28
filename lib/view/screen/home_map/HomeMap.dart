@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:mycode/model/local/MapInfo.dart';
 import 'package:mycode/service/ChatController.dart';
 
@@ -10,31 +9,31 @@ import '../../../model/local/MemberTown.dart';
 import '../../../service/MemberController.dart';
 
 class MemberMap extends StatelessWidget {
-  MemberController memberController = Get.find<MemberController>();
+  final MemberController memberController = Get.find<MemberController>();
   // NaverMapController? nController;
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      MemberTown memberTown = memberController. memberTown.value!;
+      MemberTown memberTown = memberController.memberTown.value!;
 
       NaverMapController? nController = memberController.nController.value;
 
-      if(nController != null){
-        NLatLng nLatLng = NLatLng(memberTown.y,memberTown.x);
+      if (nController != null) {
+        NLatLng nLatLng = NLatLng(memberTown.y, memberTown.x);
         NCameraPosition position = NCameraPosition(target: nLatLng, zoom: 12);
-        NCameraUpdate updateCameraInfo = NCameraUpdate.fromCameraPosition(position);
-        nController!.updateCamera(updateCameraInfo);
+        NCameraUpdate updateCameraInfo =
+            NCameraUpdate.fromCameraPosition(position);
+        nController.updateCamera(updateCameraInfo);
       }
 
       return NaverMap(
         options: NaverMapViewOptions(
           initialCameraPosition: NCameraPosition(
-              target: NLatLng(memberTown.y,memberTown.x),
+              target: NLatLng(memberTown.y, memberTown.x),
               zoom: 13,
               bearing: 0,
-              tilt: 0
-          ),
+              tilt: 0),
         ),
         forceGesture: false,
         onMapReady: (controller) {
@@ -45,18 +44,22 @@ class MemberMap extends StatelessWidget {
         onCameraChange: (position, reason) {},
         onCameraIdle: () async {
           // 화면 전환 시 화면에 포함된 user 검색 (현재 사용 불필요)
-          if (nController != null) { // nController가 null이 아닐 때만 호출
+          if (nController != null) {
+            // nController가 null이 아닐 때만 호출
             MapInfo mapInfo = memberController.mapInfo.value!;
-            NLatLngBounds bounds = await nController!.getContentBounds();
-            if(bounds.northEast.latitude == mapInfo.eastLat
-                && bounds.northEast.longitude == mapInfo.eastLng
-                && bounds.southWest.latitude == mapInfo.westLat
-                && bounds.southWest.longitude == mapInfo.westLng
-            ){} else {
+            NLatLngBounds bounds = await nController.getContentBounds();
+            if (bounds.northEast.latitude == mapInfo.eastLat &&
+                bounds.northEast.longitude == mapInfo.eastLng &&
+                bounds.southWest.latitude == mapInfo.westLat &&
+                bounds.southWest.longitude == mapInfo.westLng) {
+            } else {
               memberController.setMapInfo(bounds);
-              List<Member> selectMemberListByMapInfo = await memberController.selectMemberListByMapInfo();
-              _addCircleOverlays(nController!, selectMemberListByMapInfo, context);
-              _addMemberListOverlays(nController!, selectMemberListByMapInfo, context);
+              List<Member> selectMemberListByMapInfo =
+                  await memberController.selectMemberListByMapInfo();
+              _addCircleOverlays(
+                  nController, selectMemberListByMapInfo, context);
+              _addMemberListOverlays(
+                  nController, selectMemberListByMapInfo, context);
             }
           }
         },
@@ -65,8 +68,6 @@ class MemberMap extends StatelessWidget {
     });
   }
 }
-
-
 
 // 내 위치 영역 Polygon 출력
 // void _addPolygonOverlay(NaverMapController controller, Town memberTown) {
@@ -98,13 +99,12 @@ class MemberMap extends StatelessWidget {
 //   );
 // }
 
-
-
 // memberList 동네 위치 Circle 출력
-void _addCircleOverlays(NaverMapController controller, List<Member> allMemberList, BuildContext context) {
+void _addCircleOverlays(NaverMapController controller, List<Member> memberList,
+    BuildContext context) {
   Map<String, List<Member>> userGroupMap = {};
 
-  for (Member member in allMemberList) {
+  for (Member member in memberList) {
     String townCode = member.memberTown.id;
     if (!userGroupMap.containsKey(townCode)) {
       userGroupMap[townCode] = [];
@@ -138,7 +138,8 @@ void _addCircleOverlays(NaverMapController controller, List<Member> allMemberLis
 }
 
 // memberList 동네이름, 유저수, custom이미지 출력
-void _addMemberListOverlays(NaverMapController controller, List<Member> memberList, BuildContext context) {
+void _addMemberListOverlays(NaverMapController controller,
+    List<Member> memberList, BuildContext context) {
   Map<String, List<Member>> userGroupMap = {};
 
   for (Member user in memberList) {
@@ -160,8 +161,9 @@ void _addMemberListOverlays(NaverMapController controller, List<Member> memberLi
         id: 'marker_$index',
         position: NLatLng(firstUser.memberTown.y, firstUser.memberTown.x),
         icon: NOverlayImage.fromAssetImage('assets/images/girl1.png'),
-        size: Size(40.0,40.0),
-        caption: NOverlayCaption(text: "${firstUser.memberTown.title.split(' ').last}"),
+        size: Size(40.0, 40.0),
+        caption: NOverlayCaption(
+            text: "${firstUser.memberTown.title.split(' ').last}"),
         subCaption: NOverlayCaption(text: "${users.length}"),
         // label: NLabel(
         //   text: '${firstUser.memberTown.townName}',
@@ -214,7 +216,9 @@ void _showUserListBottomSheet(BuildContext context, List<Member> users) {
                       fontSize: 14.0, // 성별 크기 설정
                     ),
                   ),
-                  SizedBox(width: 6,),
+                  SizedBox(
+                    width: 6,
+                  ),
                   Text(
                     users[index].birthDate, // 생년월일 추가
                     style: TextStyle(

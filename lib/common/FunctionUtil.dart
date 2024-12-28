@@ -1,8 +1,6 @@
-import 'dart:ffi';
+
 
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 void handleDioException(DioException e) {
   final response = e.response;

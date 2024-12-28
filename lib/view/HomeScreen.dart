@@ -1,16 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:mycode/repository/local/MemberRepository.dart';
-import 'package:mycode/service/CodeController.dart';
 import 'package:mycode/service/MemberController.dart';
-import 'package:mycode/service/TownController.dart';
-import 'package:mycode/view/SignScreen.dart';
 import 'package:mycode/view/screen/ChatRoomsView.dart';
 import 'package:mycode/view/screen/HomeProfileScreen.dart';
-import 'package:mycode/view/LoginScreen.dart';
-import '../model/local/Code.dart';
-import 'screen/HomeInfoScreen.dart';
 import 'screen/HomeMapScreen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -71,24 +63,31 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                      fontSize: 18
-                    ),
+                        fontSize: 18),
                   ),
-                  Icon(Icons.arrow_drop_down, color: Colors.white,)
+                  Icon(
+                    Icons.arrow_drop_down,
+                    color: Colors.white,
+                  )
                 ],
-              )
-          ),
+              )),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.account_circle, color: Colors.white,),
+            icon: Icon(
+              Icons.account_circle,
+              color: Colors.white,
+            ),
             onPressed: () {
               // 여기에 아이콘 버튼 클릭 시 동작을 추가하세요
               print("Settings button pressed");
             },
           ),
           IconButton(
-            icon: Icon(Icons.message_outlined, color: Colors.white,),
+            icon: Icon(
+              Icons.message_outlined,
+              color: Colors.white,
+            ),
             onPressed: () {
               // 여기에 아이콘 버튼 클릭 시 동작을 추가하세요
               print("Settings button pressed");
@@ -96,7 +95,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-
       body: IndexedStack(
         index: _currentIndex,
         children: [
@@ -105,24 +103,17 @@ class _HomeScreenState extends State<HomeScreen> {
           _homeProfileScreen,
         ],
       ),
-
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         fixedColor: Colors.red,
         unselectedItemColor: Colors.black,
         items: [
           BottomNavigationBarItem(
-              label: "채팅",
-              icon: Icon(Icons.chat_bubble_outline)
-          ),
+              label: "채팅", icon: Icon(Icons.chat_bubble_outline)),
           BottomNavigationBarItem(
-              label: "내 주변",
-              icon: Icon(Icons.map_outlined)
-          ),
+              label: "내 주변", icon: Icon(Icons.map_outlined)),
           BottomNavigationBarItem(
-              label: "프로필",
-              icon: Icon(Icons.person_2_outlined)
-          ),
+              label: "프로필", icon: Icon(Icons.person_2_outlined)),
         ],
         onTap: (int index) {
           setState(() {

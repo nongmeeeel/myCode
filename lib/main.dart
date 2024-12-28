@@ -15,11 +15,11 @@ import 'package:mycode/view/InitScreen.dart';
 import 'package:mycode/view/LoginScreen.dart';
 import 'package:mycode/view/SignScreen.dart';
 import 'package:mycode/view/screen/ChatRoomsView.dart';
+import 'package:mycode/view/screen/SettingCodeFilterScreen.dart';
 import 'package:mycode/view/screen/SettingCodeScreen.dart';
 import 'package:mycode/view/screen/SettingTownScreen.dart';
 import 'package:mycode/view/screen/TownSearchScreen.dart';
 import 'package:mycode/view/screen/SettingMemberScreen.dart';
-import 'package:mycode/common/WebSocketManager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -98,6 +98,10 @@ class MyCode extends StatelessWidget {
             name: '/setting/code',
             page: () => SettingCodeScreen(),
             transition: Transition.downToUp),
+        GetPage(
+            name: '/setting/code/filter',
+            page: () => SettingCodeFilterScreen(),
+            transition: Transition.upToDown),
         GetPage(
             name: '/setting/member',
             page: () => SettingMemberScreen(),

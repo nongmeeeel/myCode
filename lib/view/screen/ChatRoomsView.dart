@@ -1,12 +1,13 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
+import 'package:mycode/service/MemberController.dart';
 
 import '../../service/ChatController.dart';
 import 'ChatDetailView.dart';
 
 class ChatRoomsView extends GetView<ChatController> {
+  MemberController _memberController = Get.find<MemberController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,12 +36,28 @@ class ChatRoomsView extends GetView<ChatController> {
         return ListView.builder(
           itemCount: controller.chatList.length,
           itemBuilder: (context, index) {
-            final chatRoom = controller.chatList[index];
+            final chat = controller.chatList[index];
             return ListTile(
-              title: Text(chatRoom.title),
-              subtitle: Text(chatRoom.lastMessage ?? ''),
-              trailing: Text('참여자: ${chatRoom.chatMembers.length}명'),
-              onTap: () => Get.to(() => ChatDetailView(chatRoom: chatRoom)),
+              leading: CircleAvatar(
+                backgroundImage: AssetImage('assets/images/minji.jpg'),
+                radius: 25.0, // 프로필 사진의 크기 설정
+              ),
+              title: Text(chat.lastContent ?? ''),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                      '${chat.memberName} • ${chat.memberGender} • ${chat.memberBirthDate}'),
+                ],
+              ),
+              trailing: chat.lastReadYn == 'N' &&
+                      chat.lastSenderId != _memberController.member.value!.id
+                  ? Badge(
+                      label: Text('New'),
+                      child: Icon(Icons.chat),
+                    )
+                  : null,
+              onTap: () => Get.to(() => ChatDetailView(chatRoom: chat)),
             );
           },
         );

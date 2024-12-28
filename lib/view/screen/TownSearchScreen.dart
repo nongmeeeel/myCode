@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:mycode/model/third_party/Town.dart';
 import 'package:mycode/service/MemberController.dart';
 import 'package:mycode/service/TownController.dart';

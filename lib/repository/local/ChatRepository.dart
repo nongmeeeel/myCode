@@ -6,9 +6,8 @@ import '../../common/BaseDio.dart';
 import '../../common/WebSocketManager.dart';
 import '../../model/local/Chat.dart';
 import '../../model/local/request/CreateChatRoomRequestDTO.dart';
-import '../../model/local/ChatNotification.dart';
 import 'dart:async';
-import 'package:get/get.dart';
+import '../../model/local/response/ChatWithMember.dart';
 
 class ChatRepository {
   final Dio _dio = BaseDio('/chat').dio;
@@ -17,11 +16,11 @@ class ChatRepository {
       StreamController<ChatMessage>.broadcast();
 
   // @@@@@@@@@@ HTTP API 메서드들 @@@@@@@@@@
-  Future<List<Chat>?> getUserChatRooms() async {
+  Future<List<ChatWithMember>?> getUserChatRooms() async {
     try {
       final response = await _dio.get('/rooms');
       return (response.data as List)
-          .map((json) => Chat.fromJson(json))
+          .map((json) => ChatWithMember.fromJson(json))
           .toList();
     } catch (e) {
       handleException(e);
@@ -41,10 +40,11 @@ class ChatRepository {
     }
   }
 
-  Future<Chat?> createChatRoom(CreateChatRoomRequestDTO request) async {
+  Future<ChatWithMember?> createChatRoom(
+      CreateChatRoomRequestDTO request) async {
     try {
       final response = await _dio.post('/room', data: request.toJson());
-      return Chat.fromJson(response.data);
+      return ChatWithMember.fromJson(response.data);
     } catch (e) {
       handleException(e);
       return null;

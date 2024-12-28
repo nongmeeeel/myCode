@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,15 +9,14 @@ import '../model/local/Member.dart';
 import '../model/local/request/CreateChatRoomRequestDTO.dart';
 import '../repository/local/ChatRepository.dart';
 import '../view/screen/ChatDetailView.dart';
-import '../common/FunctionUtil.dart';
-import '../model/local/ChatNotification.dart';
+import '../model/local/response/ChatWithMember.dart';
 
 class ChatController extends GetxController {
   final ChatRepository _chatRepository = ChatRepository();
   final TextEditingController messageController = TextEditingController();
   StreamSubscription? _subscription;
 
-  final RxList<Chat> chatList = <Chat>[].obs;
+  final RxList<ChatWithMember> chatList = <ChatWithMember>[].obs;
   final RxList<ChatMessage> chatMessageList = <ChatMessage>[].obs;
   final RxBool isLoadingChatList = false.obs;
   final RxBool isLoadingMessages = false.obs;
@@ -53,6 +51,20 @@ class ChatController extends GetxController {
       (message) {
         if (!chatMessageList.any((m) => m.id == message.id)) {
           chatMessageList.add(message);
+
+          // 메시지가 온 채팅방을 맨 위로 이동
+          final chatIndex =
+              chatList.indexWhere((chat) => chat.id == chatRoomId);
+          if (chatIndex != -1) {
+            final chat = chatList[chatIndex];
+            chat.lastMessage = message.sendAt;
+            chat.lastContent = message.content;
+            chat.lastSenderId = message.senderId;
+            chat.lastReadYn = message.readStatus;
+
+            chatList.removeAt(chatIndex);
+            chatList.insert(0, chat);
+          }
         }
       },
       onError: (error) => print('@@@@@@ 스트림 에러: $error @@@@@@'),
@@ -75,6 +87,17 @@ class ChatController extends GetxController {
   }
 
   Future<void> createDirectChatRoom(Member targetMember) async {
+    // 기존 채팅방 찾기
+    final existingChat =
+        chatList.firstWhereOrNull((chat) => chat.memberId == targetMember.id);
+
+    // 기존 채팅방 이미 존재 시,
+    if (existingChat != null) {
+      Get.to(() => ChatDetailView(chatRoom: existingChat));
+      return;
+    }
+
+    // 기존 채팅방 없을 시, 새 채팅방 생성
     final request = CreateChatRoomRequestDTO(
       title: '${targetMember.name}님과의 1:1 채팅',
       type: 'PRIVATE',
@@ -83,7 +106,7 @@ class ChatController extends GetxController {
 
     final result = await _chatRepository.createChatRoom(request);
     if (result != null) {
-      chatList.add(result);
+      chatList.insert(0, result); // 새 채팅방을 맨 위에 추가
       Get.to(() => ChatDetailView(chatRoom: result));
     } else {
       error.value = '채팅방 생성에 실패했습니다';
@@ -107,9 +130,11 @@ class ChatController extends GetxController {
       chatMemberIdList: [...memberIds, currentMember.id],
     );
 
-    final result = await _chatRepository.createChatRoom(request);
+    await _chatRepository.createChatRoom(request);
+
+    final result = await _chatRepository.getUserChatRooms();
     if (result != null) {
-      chatList.add(result);
+      chatList.assignAll(result);
       Get.back();
     } else {
       error.value = '채팅방 생성에 실패했습니다';

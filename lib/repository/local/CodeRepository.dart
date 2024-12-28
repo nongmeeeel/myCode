@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 
 import '../../common/BaseDio.dart';
-import '../../common/Interceptor.dart';
 import '../../common/FunctionUtil.dart';
 import '../../model/local/Code.dart';
 

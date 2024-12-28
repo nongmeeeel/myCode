@@ -40,4 +40,4 @@ class ChatMessage {
       readStatus: json['readStatus'],
     );
   }
-} 
+}

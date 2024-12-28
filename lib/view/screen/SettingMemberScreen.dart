@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mycode/view/screen/TownSearchForSignUpScreen.dart';
 import '../../service/MemberController.dart';
 
 class SettingMemberScreen extends StatelessWidget {
@@ -141,7 +140,7 @@ class SettingMemberScreen extends StatelessWidget {
                               },
                               controller: TextEditingController(
                                 text: memberFormBirthDate != null
-                                    ? '${memberFormBirthDate!.year}-${memberFormBirthDate!.month.toString().padLeft(2, '0')}-${memberController.memberFormBirthDate.value!.day.toString().padLeft(2, '0')}'
+                                    ? '${memberFormBirthDate.year}-${memberFormBirthDate.month.toString().padLeft(2, '0')}-${memberController.memberFormBirthDate.value!.day.toString().padLeft(2, '0')}'
                                     : '',
                               ),
                             );

@@ -1,7 +1,4 @@
-import 'dart:ffi';
-
 import 'package:mycode/model/local/MemberTown.dart';
-import 'package:mycode/model/third_party/Town.dart';
 
 class Member {
   final int id;
@@ -15,18 +12,17 @@ class Member {
   final MemberTown memberTown;
   final String? role;
 
-  Member({
-    required this.id,
-    required this.loginType,
-    required this.kakaoNickname,
-    required this.name,
-    required this.gender,
-    required this.birthDate,
-    required this.email,
-    required this.phoneNumber,
-    required this.memberTown,
-    required this.role
-  });
+  Member(
+      {required this.id,
+      required this.loginType,
+      required this.kakaoNickname,
+      required this.name,
+      required this.gender,
+      required this.birthDate,
+      required this.email,
+      required this.phoneNumber,
+      required this.memberTown,
+      required this.role});
 
   factory Member.fromJson(Map<String, dynamic> json) {
     return Member(

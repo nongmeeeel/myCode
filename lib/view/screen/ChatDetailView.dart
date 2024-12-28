@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mycode/model/local/ChatMessage.dart';
+import 'package:mycode/model/local/response/ChatWithMember.dart';
 
 import '../../model/local/Chat.dart';
 import '../../service/ChatController.dart';
 import '../../service/MemberController.dart';
 
 class ChatDetailView extends StatelessWidget {
-  final Chat chatRoom;
+  final ChatWithMember chatRoom;
   final ChatController chatController = Get.find<ChatController>();
   final MemberController memberController = Get.find<MemberController>();
   final ScrollController _scrollController = ScrollController();

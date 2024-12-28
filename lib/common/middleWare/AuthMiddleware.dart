@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/src/routes/route_middleware.dart';
-import 'package:mycode/common/auth/KakaoTokenUtil.dart';
 
 import '../../service/MemberController.dart';
-import '../auth/TokenUtil.dart';
 
 
 class AuthMiddleware extends GetMiddleware {

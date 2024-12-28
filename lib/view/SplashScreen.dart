@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueAccent, // Background color of the splash screen
+      backgroundColor:
+          Colors.blueAccent, // Background color of the splash screen
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

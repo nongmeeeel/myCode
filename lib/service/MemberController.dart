@@ -2,26 +2,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:get/get.dart';
-import 'package:get/get_rx/get_rx.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:mycode/common/WebSocketManager.dart';
 import 'package:mycode/common/auth/TokenUtil.dart';
 import 'package:mycode/model/local/Code.dart';
 import 'package:mycode/model/local/request/SignUpRequestDTO.dart';
-import 'package:mycode/repository/local/CodeRepository.dart';
 import 'package:mycode/service/ChatController.dart';
 import 'package:mycode/service/CodeController.dart';
-import 'package:mycode/service/TownController.dart';
 import '../model/local/MapInfo.dart';
 import '../model/local/Member.dart';
 import 'package:mycode/common/auth/KakaoLoginUtil.dart';
 import 'package:mycode/common/auth/KakaoTokenUtil.dart';
 import 'package:mycode/model/local/MemberTown.dart';
-import 'package:mycode/repository/third_party/TownRepository.dart';
 
-import '../common/FunctionUtil.dart';
 import '../model/local/response/FetchMemberResponseDTO.dart';
 import '../model/local/response/MemberCode.dart';
 import '../model/third_party/Town.dart';
@@ -30,7 +23,6 @@ import '../repository/local/MemberRepository.dart';
 class MemberController extends GetxController {
   final MemberRepository _memberRepository = MemberRepository();
   final CodeController _codeController = Get.find<CodeController>();
-  final TownController _townController = Get.find<TownController>();
   final ChatController _chatController = Get.find<ChatController>();
   final WebSocketManager webSocketManager = WebSocketManager();
   final KakaoTokenUtil kakaoTokenUtil = KakaoTokenUtil();
@@ -48,6 +40,7 @@ class MemberController extends GetxController {
   Rx<Member?> member = Rx<Member?>(null);
   Rx<MemberTown?> memberTown = Rx<MemberTown?>(null);
   RxList<MemberCode?> memberCodeList = RxList([]);
+  RxList<MemberCode?> memberCodeFilterList = RxList([]);
   RxList<CodeItem> memberFilterItemList = RxList([]);
 
   // Sign 시, 최초 Form 정보 임시 저장
@@ -107,22 +100,24 @@ class MemberController extends GetxController {
     if (fetchMemberResponseDTO != null) {
       Member _member = fetchMemberResponseDTO.member;
       List<MemberCode> _memberCodeList = fetchMemberResponseDTO.memberCodeList;
+      List<MemberCode> _memberCodeFilterList = fetchMemberResponseDTO.memberCodeFilterList;
 
       member.value = _member;
       memberTown.value = _member.memberTown;
       memberCodeList.value = _memberCodeList;
+      memberCodeFilterList.value = _memberCodeFilterList;
 
       // 멤버 정보 로드 후 다른 초기화 작업 수행
-      await initializeServices();
+      // await initializeServices();
     }
   }
 
-  Future<void> initializeServices() async {
-    // 순서가 중요한 초기화 작업들
-    await webSocketManager.initialize(); // 웹소켓 먼저 초기화
-    await _codeController.fetchAllCodeList();
-    await _chatController.fetchUserChatRooms();
-  }
+  // Future<void> initializeServices() async {
+  //   // 순서가 중요한 초기화 작업들
+  //   await webSocketManager.initialize(); // 웹소켓 먼저 초기화
+  //   await _codeController.fetchAllCodeList();
+  //   await _chatController.fetchUserChatRooms();
+  // }
 
   // 멤버 리스트 정보 FETCH
   Future<void> fetchMemberList() async {
@@ -141,8 +136,11 @@ class MemberController extends GetxController {
     List<Member> memberList =
         await _memberRepository.selectMemberListByMapInfoAPI(data);
 
-    mapMemberList.assignAll(memberList);
-    return memberList;
+    // 현재 로그인한 사용자를 제외한 리스트 반환
+    final filteredList =
+        memberList.where((m) => m.id != member.value?.id).toList();
+    mapMemberList.assignAll(filteredList);
+    return filteredList;
   }
 
   Future<void> updateMember() async {
@@ -176,6 +174,14 @@ class MemberController extends GetxController {
     List<MemberCode> _memberCodeList =
         await _memberRepository.selectMemberCodeList();
     memberCodeList.assignAll(_memberCodeList);
+  }
+  
+  Future<void> updateMemberCodeFilterMap() async {
+    Set<int> selectedFilterItemSet = _codeController.selectedFilterItemSet;
+    await _memberRepository.updateMemberCodeFilterMap(selectedFilterItemSet);
+    List<MemberCode> _memberCodeFilterList =
+        await _memberRepository.selectMemberCodeFilterList();
+    memberCodeFilterList.assignAll(_memberCodeFilterList);
   }
 //----------------------------------------------------//
 

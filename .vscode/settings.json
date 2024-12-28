@@ -1,3 +1,7 @@
 {
-    "java.compile.nullAnalysis.mode": "automatic"
+    "java.compile.nullAnalysis.mode": "automatic",
+    "git.enabled": true,
+    "git.autorefresh": true,
+    "git.autofetch": false,
+    "git.confirmSync": false
 }

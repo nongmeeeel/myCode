@@ -1,15 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:mycode/repository/third_party/TownRepository.dart';
-
-import '../../repository/local/MemberRepository.dart';
-import '../../service/TownController.dart';
 
 class HomeInfoScreen extends StatelessWidget {
-  final TownController _townController = Get.find<TownController>();
-  final TownRepository _townRepository = TownRepository();
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -48,10 +39,7 @@ class HomeInfoScreen extends StatelessWidget {
               CodeBox(codeBoxText: ""),
             ],
           ),
-          ElevatedButton(
-            onPressed: () => print("ㅎㅇ"),
-            child: Text("버튼이다잇")
-          )
+          ElevatedButton(onPressed: () => print("ㅎㅇ"), child: Text("버튼이다잇"))
         ],
       ),
     );
@@ -65,7 +53,6 @@ class CodeBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       alignment: Alignment.center,
       width: 100,
@@ -74,12 +61,10 @@ class CodeBox extends StatelessWidget {
         border: Border.all(color: Colors.black, width: 3.0),
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
-      child: Text(
-          codeBoxText,
+      child: Text(codeBoxText,
           textAlign: TextAlign.center,
           overflow: TextOverflow.fade,
-          style: TextStyle(fontWeight: FontWeight.bold)
-      ),
+          style: TextStyle(fontWeight: FontWeight.bold)),
     );
   }
 }
@@ -91,7 +76,6 @@ class CodeBoxMain extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       alignment: Alignment.center,
       width: 100,
@@ -101,12 +85,10 @@ class CodeBoxMain extends StatelessWidget {
         border: Border.all(color: Colors.black, width: 3.0),
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
-      child: Text(
-          codeBoxText,
+      child: Text(codeBoxText,
           textAlign: TextAlign.center,
           overflow: TextOverflow.fade,
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)
-      ),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
     );
   }
 }

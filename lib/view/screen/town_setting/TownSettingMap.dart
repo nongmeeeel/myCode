@@ -1,51 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:get/get.dart';
-import 'package:mycode/common/FunctionUtil.dart';
 
 import '../../../model/local/MemberTown.dart';
-import '../../../model/third_party/Town.dart';
-import '../../../service/TownController.dart';
 import '../../../service/MemberController.dart';
 
 class TownSettingMap extends StatelessWidget {
-  MemberController memberController = Get.find<MemberController>();
+  final MemberController memberController = Get.find<MemberController>();
   NaverMapController? nController;
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       MemberTown memberTown = memberController.memberTown.value!;
-      if(nController != null){
-        NLatLng nLatLng = NLatLng(memberTown.y,memberTown.x);
+      if (nController != null) {
+        NLatLng nLatLng = NLatLng(memberTown.y, memberTown.x);
         NCameraPosition position = NCameraPosition(target: nLatLng, zoom: 12);
-        NCameraUpdate updateCameraInfo = NCameraUpdate.fromCameraPosition(position);
+        NCameraUpdate updateCameraInfo =
+            NCameraUpdate.fromCameraPosition(position);
         nController!.updateCamera(updateCameraInfo);
       }
 
       return Container(
           color: Colors.blue, // Just a placeholder color
           child: NaverMap(
-              options: NaverMapViewOptions(
-                initialCameraPosition: NCameraPosition(
-                    target: NLatLng(memberTown.y,memberTown.x),
-                    zoom: 13,
-                    bearing: 0,
-                    tilt: 0
-                ),
-              ), // 지도 옵션을 설정할 수 있습니다.
-              forceGesture: false, // 지도에 전달되는 제스처 이벤트의 우선순위를 가장 높게 설정할지 여부를 지정합니다.
-              onMapReady: (controller) async {
-                nController = controller;
-              },
+            options: NaverMapViewOptions(
+              initialCameraPosition: NCameraPosition(
+                  target: NLatLng(memberTown.y, memberTown.x),
+                  zoom: 13,
+                  bearing: 0,
+                  tilt: 0),
+            ), // 지도 옵션을 설정할 수 있습니다.
+            forceGesture:
+                false, // 지도에 전달되는 제스처 이벤트의 우선순위를 가장 높게 설정할지 여부를 지정합니다.
+            onMapReady: (controller) async {
+              nController = controller;
+            },
             onCameraIdle: () async {
               // 화면 전환 시 화면에 포함된 user 검색 (현재 사용 불필요)
-              if (nController != null) { // nController가 null이 아닐 때만 호출
+              if (nController != null) {
+                // nController가 null이 아닐 때만 호출
                 _addCircleOverlay(nController!, memberTown);
               }
             },
-          )
-      );
+          ));
     });
   }
 }

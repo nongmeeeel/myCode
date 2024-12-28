@@ -1,12 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:mycode/service/MemberController.dart';
-import 'package:provider/provider.dart';
-
-import '../../model/local/Code.dart';
 import '../../model/local/Member.dart';
 import '../../model/local/MemberTown.dart';
 import '../../model/local/response/MemberCode.dart';
@@ -46,7 +40,7 @@ class HomeProfileScreen extends StatelessWidget {
               // 멤버 코드
               Obx(() {
                 List<MemberCode?> _memberCodeList =
-                    _memberController.memberCodeList.value;
+                    _memberController.memberCodeList;
                 return _buildTitleAndItemList(
                     '내 코드',
                     _memberCodeList
