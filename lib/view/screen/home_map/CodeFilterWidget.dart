@@ -26,12 +26,13 @@ class CodeFilterWidget extends StatelessWidget {
         children: [
           // 필터 버튼
           ElevatedButton.icon(
-            onPressed: () {
+            onPressed: () async {
               Set<int> codeFilterItemIdSet = _memberController
                   .memberCodeFilterList
                   .map((element) => element!.codeItemId)
                   .toSet();
-              _codeController.setSelectedFilterItemSet(codeFilterItemIdSet);
+              await _codeController
+                  .setSelectedFilterItemSet(codeFilterItemIdSet);
               Get.toNamed('/setting/code/filter');
             },
             icon: Icon(Icons.filter_list),
@@ -63,9 +64,7 @@ class CodeFilterWidget extends StatelessWidget {
                             padding: EdgeInsets.only(right: 8),
                             child: Chip(
                               label: Text(item.title),
-                              onDeleted: () {
-                                _codeController.toggleFilterItemSelect(item.id);
-                              },
+                              backgroundColor: Colors.blue.withOpacity(0.1),
                             ),
                           ))
                       .toList(),

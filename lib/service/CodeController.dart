@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mycode/model/local/Code.dart';
@@ -34,7 +36,7 @@ class CodeController extends GetxController {
     selectedItemIdSet.assignAll(codeItemIdSet);
   }
 
-  void setSelectedFilterItemSet(Set<int> codeItemIdSet) {
+  Future<void> setSelectedFilterItemSet(Set<int> codeItemIdSet) async {
     selectedFilterItemSet.assignAll(codeItemIdSet);
   }
 

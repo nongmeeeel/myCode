@@ -58,12 +58,14 @@ class MemberRepository {
     }
   }
 
-  Future<List<Member>> selectMemberListByMapInfoAPI(
+  Future<List<FetchMemberResponseDTO>> selectMemberListByMapInfoAPI(
       Map<String, dynamic> data) async {
     try {
       Response response = await dio.get('/list/by-map', queryParameters: data);
       List<dynamic> responseData = response.data;
-      return responseData.map((json) => Member.fromJson(json)).toList();
+      return responseData
+          .map((json) => FetchMemberResponseDTO.fromJson(json))
+          .toList();
     } catch (e) {
       handleException(e);
       return [];

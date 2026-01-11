@@ -58,7 +58,7 @@ class MemberController extends GetxController {
 
   // MEMBER LIST
   RxList<Member> allMemberList = RxList([]);
-  RxList<Member> mapMemberList = RxList([]);
+  RxList<FetchMemberResponseDTO> mapMemberList = RxList([]);
 
   // CODE
 
@@ -100,7 +100,8 @@ class MemberController extends GetxController {
     if (fetchMemberResponseDTO != null) {
       Member _member = fetchMemberResponseDTO.member;
       List<MemberCode> _memberCodeList = fetchMemberResponseDTO.memberCodeList;
-      List<MemberCode> _memberCodeFilterList = fetchMemberResponseDTO.memberCodeFilterList;
+      List<MemberCode> _memberCodeFilterList =
+          fetchMemberResponseDTO.memberCodeFilterList ?? [];
 
       member.value = _member;
       memberTown.value = _member.memberTown;
@@ -126,21 +127,18 @@ class MemberController extends GetxController {
   }
 
   // map 좌표에 해당하는 멤버 리스트 조회
-  Future<List<Member>> selectMemberListByMapInfo() async {
+  Future<List<FetchMemberResponseDTO>> selectMemberListByMapInfo() async {
     Map<String, dynamic> data = {
       'northEastLat': mapInfo.value!.eastLat,
       'northEastLng': mapInfo.value!.eastLng,
       'southWestLat': mapInfo.value!.westLat,
       'southWestLng': mapInfo.value!.westLng,
     };
-    List<Member> memberList =
+    List<FetchMemberResponseDTO> fetchMemberResponseDTOList =
         await _memberRepository.selectMemberListByMapInfoAPI(data);
 
-    // 현재 로그인한 사용자를 제외한 리스트 반환
-    final filteredList =
-        memberList.where((m) => m.id != member.value?.id).toList();
-    mapMemberList.assignAll(filteredList);
-    return filteredList;
+    mapMemberList.assignAll(fetchMemberResponseDTOList);
+    return fetchMemberResponseDTOList;
   }
 
   Future<void> updateMember() async {
@@ -175,13 +173,14 @@ class MemberController extends GetxController {
         await _memberRepository.selectMemberCodeList();
     memberCodeList.assignAll(_memberCodeList);
   }
-  
+
   Future<void> updateMemberCodeFilterMap() async {
     Set<int> selectedFilterItemSet = _codeController.selectedFilterItemSet;
     await _memberRepository.updateMemberCodeFilterMap(selectedFilterItemSet);
     List<MemberCode> _memberCodeFilterList =
         await _memberRepository.selectMemberCodeFilterList();
     memberCodeFilterList.assignAll(_memberCodeFilterList);
+    await selectMemberListByMapInfo();
   }
 //----------------------------------------------------//
 

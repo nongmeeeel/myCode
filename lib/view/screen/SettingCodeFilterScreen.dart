@@ -19,7 +19,7 @@ class SettingCodeFilterScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('관심사 선택'),
+        title: const Text('필터 선택'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -137,36 +137,17 @@ class SettingCodeFilterScreen extends StatelessWidget {
               return ElevatedButton(
                 onPressed: () {
                   // 선택된 아이템들 저장 로직
-                  if (_codeController.selectedFilterItemSet.length < 3) {
-                    Get.dialog(
-                      AlertDialog(
-                        title: Text('최소 선택 필요'),
-                        content: Text('최소 3개 이상의 관심사를 선택해주세요.'),
-                        actions: [
-                          TextButton(
-                            child: Text('확인'),
-                            onPressed: () => Get.back(),
-                          ),
-                        ],
-                      ),
-                    );
-                  } else {
-                    _memberController.updateMemberCodeFilterMap();
+                  _memberController.updateMemberCodeFilterMap();
 
-                    Get.closeAllSnackbars();
-                    Get.back();
-                    Get.snackbar('관심사 저장',
-                        '${_codeController.selectedFilterItemSet.length}개의 관심사가 저장되었습니다.',
-                        backgroundColor: Colors.green.shade100);
-                  }
+                  Get.closeAllSnackbars();
+                  Get.back();
+                  Get.snackbar('관심사 저장',
+                      '${_codeController.selectedFilterItemSet.length}개의 관심사가 저장되었습니다.',
+                      backgroundColor: Colors.green.shade100);
                 },
                 style: ElevatedButton.styleFrom(
-                  minimumSize: Size(double.infinity, 50),
-                  backgroundColor:
-                      _codeController.selectedFilterItemSet.length >= 3
-                          ? Colors.orange
-                          : Colors.grey,
-                ),
+                    minimumSize: Size(double.infinity, 50),
+                    backgroundColor: Colors.orange),
                 child: Text(
                   '저장하기 (${_codeController.selectedFilterItemSet.length}/10)',
                   style: TextStyle(

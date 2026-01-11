@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:get/get.dart';
 import 'package:mycode/model/local/MapInfo.dart';
+import 'package:mycode/model/local/response/FetchMemberResponseDTO.dart';
 import 'package:mycode/service/ChatController.dart';
 
 import '../../../model/local/Member.dart';
@@ -10,21 +11,31 @@ import '../../../service/MemberController.dart';
 
 class MemberMap extends StatelessWidget {
   final MemberController memberController = Get.find<MemberController>();
-  // NaverMapController? nController;
+  final isInitialized = false.obs; // 초기화 상태 추적
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       MemberTown memberTown = memberController.memberTown.value!;
+      List<FetchMemberResponseDTO> mapMembers =
+          memberController.mapMemberList; // 현재 맵 멤버 리스트
 
       NaverMapController? nController = memberController.nController.value;
 
       if (nController != null) {
-        NLatLng nLatLng = NLatLng(memberTown.y, memberTown.x);
-        NCameraPosition position = NCameraPosition(target: nLatLng, zoom: 12);
-        NCameraUpdate updateCameraInfo =
-            NCameraUpdate.fromCameraPosition(position);
-        nController.updateCamera(updateCameraInfo);
+        // 최초 한 번만 카메라 위치 설정
+        if (!isInitialized.value) {
+          NLatLng nLatLng = NLatLng(memberTown.y, memberTown.x);
+          NCameraPosition position = NCameraPosition(target: nLatLng, zoom: 12);
+          NCameraUpdate updateCameraInfo =
+              NCameraUpdate.fromCameraPosition(position);
+          nController.updateCamera(updateCameraInfo);
+          isInitialized.value = true;
+        }
+
+        // 오버레이 업데이트
+        _addCircleOverlays(nController, mapMembers, context);
+        _addMemberListOverlays(nController, mapMembers, context);
       }
 
       return NaverMap(
@@ -43,23 +54,15 @@ class MemberMap extends StatelessWidget {
         onSymbolTapped: (symbol) {},
         onCameraChange: (position, reason) {},
         onCameraIdle: () async {
-          // 화면 전환 시 화면에 포함된 user 검색 (현재 사용 불필요)
           if (nController != null) {
-            // nController가 null이 아닐 때만 호출
             MapInfo mapInfo = memberController.mapInfo.value!;
             NLatLngBounds bounds = await nController.getContentBounds();
-            if (bounds.northEast.latitude == mapInfo.eastLat &&
-                bounds.northEast.longitude == mapInfo.eastLng &&
-                bounds.southWest.latitude == mapInfo.westLat &&
-                bounds.southWest.longitude == mapInfo.westLng) {
-            } else {
+            if (bounds.northEast.latitude != mapInfo.eastLat ||
+                bounds.northEast.longitude != mapInfo.eastLng ||
+                bounds.southWest.latitude != mapInfo.westLat ||
+                bounds.southWest.longitude != mapInfo.westLng) {
               memberController.setMapInfo(bounds);
-              List<Member> selectMemberListByMapInfo =
-                  await memberController.selectMemberListByMapInfo();
-              _addCircleOverlays(
-                  nController, selectMemberListByMapInfo, context);
-              _addMemberListOverlays(
-                  nController, selectMemberListByMapInfo, context);
+              memberController.selectMemberListByMapInfo(); // 결과를 직접 사용하지 않음
             }
           }
         },
@@ -100,9 +103,11 @@ class MemberMap extends StatelessWidget {
 // }
 
 // memberList 동네 위치 Circle 출력
-void _addCircleOverlays(NaverMapController controller, List<Member> memberList,
-    BuildContext context) {
+void _addCircleOverlays(NaverMapController controller,
+    List<FetchMemberResponseDTO> fetchMemberList, BuildContext context) {
   Map<String, List<Member>> userGroupMap = {};
+
+  List<Member> memberList = fetchMemberList.map((e) => e.member).toList();
 
   for (Member member in memberList) {
     String townCode = member.memberTown.id;
@@ -128,7 +133,7 @@ void _addCircleOverlays(NaverMapController controller, List<Member> memberList,
       );
 
       circle.setOnTapListener((overlay) {
-        _showUserListBottomSheet(context, users);
+        _showUserListBottomSheet(context, fetchMemberList);
       });
 
       controller.addOverlay(circle);
@@ -139,11 +144,12 @@ void _addCircleOverlays(NaverMapController controller, List<Member> memberList,
 
 // memberList 동네이름, 유저수, custom이미지 출력
 void _addMemberListOverlays(NaverMapController controller,
-    List<Member> memberList, BuildContext context) {
-  Map<String, List<Member>> userGroupMap = {};
+    List<FetchMemberResponseDTO> fetchMemberList, BuildContext context) {
+  Map<String, List<FetchMemberResponseDTO>> userGroupMap = {};
 
-  for (Member user in memberList) {
-    String townCode = user.memberTown.id;
+  for (FetchMemberResponseDTO user in fetchMemberList) {
+    Member member = user.member;
+    String townCode = member.memberTown.id;
     if (!userGroupMap.containsKey(townCode)) {
       userGroupMap[townCode] = [];
     }
@@ -154,16 +160,17 @@ void _addMemberListOverlays(NaverMapController controller,
 
   userGroupMap.forEach((townCode, users) {
     if (users.isNotEmpty) {
-      Member firstUser = users.first;
+      FetchMemberResponseDTO firstUser = users.first;
 
       // 투명 아이콘으로 마커 오버레이 생성 (글자 가독성 확보)
       NMarker marker = NMarker(
         id: 'marker_$index',
-        position: NLatLng(firstUser.memberTown.y, firstUser.memberTown.x),
+        position: NLatLng(
+            firstUser.member.memberTown.y, firstUser.member.memberTown.x),
         icon: NOverlayImage.fromAssetImage('assets/images/girl1.png'),
         size: Size(40.0, 40.0),
         caption: NOverlayCaption(
-            text: "${firstUser.memberTown.title.split(' ').last}"),
+            text: "${firstUser.member.memberTown.title.split(' ').last}"),
         subCaption: NOverlayCaption(text: "${users.length}"),
         // label: NLabel(
         //   text: '${firstUser.memberTown.townName}',
@@ -184,8 +191,17 @@ void _addMemberListOverlays(NaverMapController controller,
 }
 
 // 해당 지역 유저 리스트 정보 BOTTOM SHEET 세팅
-void _showUserListBottomSheet(BuildContext context, List<Member> users) {
+void _showUserListBottomSheet(
+    BuildContext context, List<FetchMemberResponseDTO> users) {
   ChatController _chatController = Get.find();
+
+  // 나이 계산 함수
+  int calculateAge(String birthDate) {
+    final year = int.parse(birthDate.substring(0, 4));
+    final currentYear = DateTime.now().year;
+    return currentYear - year;
+  }
+
   showModalBottomSheet(
     context: context,
     builder: (BuildContext context) {
@@ -194,43 +210,53 @@ void _showUserListBottomSheet(BuildContext context, List<Member> users) {
         child: ListView.builder(
           itemCount: users.length,
           itemBuilder: (context, index) {
+            final member = users[index].member;
+            final codeItems = users[index].memberCodeList;
+            final age = calculateAge(member.birthDate);
+
             return ListTile(
               contentPadding: EdgeInsets.symmetric(vertical: 8.0),
               leading: CircleAvatar(
                 backgroundImage: AssetImage('assets/images/minji.jpg'),
-                radius: 25.0, // 프로필 사진의 크기 설정
+                radius: 25.0,
               ),
-              title: Text(
-                users[index].name,
-                style: TextStyle(
-                  fontSize: 20.0, // 이름 크기 크게 설정
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              subtitle: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              title: Row(
                 children: [
                   Text(
-                    users[index].gender,
+                    member.name,
                     style: TextStyle(
-                      fontSize: 14.0, // 성별 크기 설정
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(
-                    width: 6,
-                  ),
+                  SizedBox(width: 8),
                   Text(
-                    users[index].birthDate, // 생년월일 추가
+                    '${member.gender} • ${age}세',
                     style: TextStyle(
-                      fontSize: 14.0, // 생년월일 크기 설정
+                      fontSize: 14.0,
+                      color: Colors.grey[600],
                     ),
                   ),
                 ],
               ),
+              subtitle: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: codeItems
+                      .map((code) => Padding(
+                            padding: EdgeInsets.only(right: 4),
+                            child: Chip(
+                              label: Text(code.codeItemTitle),
+                              labelStyle: TextStyle(fontSize: 12),
+                              backgroundColor: Colors.blue.withOpacity(0.1),
+                            ),
+                          ))
+                      .toList(),
+                ),
+              ),
               onTap: () {
-                _chatController.createDirectChatRoom(users[index]);
+                _chatController.createDirectChatRoom(member);
               },
-              // trailing: _buildChipItem(users[index].), // 오른쪽에 code 표시
             );
           },
         ),

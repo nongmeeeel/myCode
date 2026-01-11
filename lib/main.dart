@@ -39,9 +39,20 @@ Future<void> _initialize() async {
   KakaoSdk.init(nativeAppKey: '2ab3cf1d10a4a98cdf9d505671df64f1');
 
   // 네이버 지도 초기화
-  await NaverMapSdk.instance.initialize(
+  await FlutterNaverMap().init(
       clientId: 'xzbx4hfeqo',
-      onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed"));
+      onAuthFailed: (ex) {
+        switch (ex) {
+          case NQuotaExceededException(:final message):
+            print("사용량 초과 (message: $message)");
+            break;
+          case NUnauthorizedClientException() ||
+          NClientUnspecifiedException() ||
+          NAnotherAuthFailedException():
+            print("인증 실패: $ex");
+            break;
+        }
+      });
 }
 
 void _initializeControllers() {
